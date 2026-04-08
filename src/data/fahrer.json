@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Mueller",
+    "vorname": "Luca",
+    "telefon": "+41 79 101 01 01",
+    "lenkzeitStunden": 6,
+    "fuehrerscheinKat": "C",
+    "verfuegbarkeit": "verfuegbar",
+    "spezifikationen": ["ADR"]
+  },
+  {
+    "id": 2,
+    "name": "Schneider",
+    "vorname": "Laura",
+    "telefon": "+41 79 202 02 02",
+    "lenkzeitStunden": 4,
+    "fuehrerscheinKat": "C1",
+    "verfuegbarkeit": "unterwegs",
+    "spezifikationen": []
+  },
+  {
+    "id": 3,
+    "name": "Keller",
+    "vorname": "Marco",
+    "telefon": "+41 79 303 03 03",
+    "lenkzeitStunden": 7,
+    "fuehrerscheinKat": "CE",
+    "verfuegbarkeit": "verfuegbar",
+    "spezifikationen": ["Kuehltransport", "Gefahrengut"]
+  }
+]
