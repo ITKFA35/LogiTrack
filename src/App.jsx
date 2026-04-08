@@ -5,6 +5,7 @@ import FleetManagement from "./pages/FleetManagement";
 import Inventory from "./pages/Inventory";
 import Reports from "./pages/Reports";
 import CustomerPartnerPortal from "./pages/CustomerPartnerPortal";
+import ApiTest from "./pages/ApiTest";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Route path="/flotte" element={<FleetManagement />} />
       <Route path="/inventar" element={<Inventory />} />
       <Route path="/reports" element={<Reports />} />
+      <Route path="/api-test" element={<ApiTest />} />
     </Routes>
   );
 }

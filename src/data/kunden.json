@@ -1,0 +1,54 @@
+[
+  {
+    "id": 1,
+    "kontoNr": "K-1001",
+    "firmenname": "Migros Bern",
+    "ansprechperson": "Max Muster",
+    "adresse": "Spitalgasse 12",
+    "ort": "Bern",
+    "plz": "3011",
+    "email": "bern@migros.ch",
+    "telefon": "+41 31 111 11 11",
+    "branche": "Detailhandel",
+    "sprache": "de"
+  },
+  {
+    "id": 2,
+    "kontoNr": "K-1002",
+    "firmenname": "Coop Zuerich",
+    "ansprechperson": "Anna Keller",
+    "adresse": "Bahnhofstrasse 20",
+    "ort": "Zuerich",
+    "plz": "8001",
+    "email": "zuerich@coop.ch",
+    "telefon": "+41 44 222 22 22",
+    "branche": "Detailhandel",
+    "sprache": "de"
+  },
+  {
+    "id": 3,
+    "kontoNr": "K-1003",
+    "firmenname": "Meier Spedition AG",
+    "ansprechperson": "Peter Meier",
+    "adresse": "Industriestrasse 8",
+    "ort": "Basel",
+    "plz": "4051",
+    "email": "info@meierspedition.ch",
+    "telefon": "+41 61 333 33 33",
+    "branche": "Logistik",
+    "sprache": "de"
+  },
+  {
+    "id": 4,
+    "kontoNr": "K-1004",
+    "firmenname": "PharmaLog Lausanne",
+    "ansprechperson": "Sophie Martin",
+    "adresse": "Rue Centrale 15",
+    "ort": "Lausanne",
+    "plz": "1003",
+    "email": "contact@pharmalog.ch",
+    "telefon": "+41 21 444 44 44",
+    "branche": "Pharma",
+    "sprache": "fr"
+  }
+]

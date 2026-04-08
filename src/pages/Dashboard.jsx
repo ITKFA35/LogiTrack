@@ -1,7 +1,11 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+
 
 export default function Dashboard() {
   const navigate = useNavigate();
+
 
   const buttons = [
     { name: "Customer Portal", path: "/customer-portal" },
@@ -10,6 +14,8 @@ export default function Dashboard() {
     { name: "Inventar", path: "/inventar" },
     { name: "Reports", path: "/reports" },
   ];
+
+
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-r from-slate-950 via-slate-900 to-slate-800 text-white">
@@ -28,6 +34,7 @@ export default function Dashboard() {
             </button>
           ))}
         </div>
+                  
       </div>
     </div>
   );
