@@ -4,11 +4,11 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const buttons = [
-    { name: "Customer Portal", path: "/customer-portal" },
-    { name: "Transport", path: "/transport" },
-    { name: "Flotte", path: "/flotte" },
-    { name: "Inventar", path: "/inventar" },
-    { name: "Reports", path: "/reports" },
+    { name: "Transportmanagement", path: "/transport" },
+    { name: "Flottenmanagement", path: "/flotte" },
+    { name: "Lagen & Inventar", path: "/inventar" },
+    { name: "Reporting & Dashboard", path: "/reports" },
+    { name: "Kunden & Partnerfunktion", path: "/Customer-Portal" },
   ];
 
   return (
