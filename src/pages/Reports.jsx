@@ -1,9 +1,23 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getSendungen, getFahrzeuge } from "../services/api";
 
 export default function Reports() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const [sendungen, setSendungen] = useState([]);
+  const [fahrzeuge, setFahrzeuge] = useState([]);
+
+  useEffect(() => {
+    getSendungen().then((data) => {
+      setSendungen(data);
+    });
+
+    getFahrzeuge().then((data) => {
+      setFahrzeuge(data);
+    });
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-900 text-white p-8 md:p-10">
@@ -57,12 +71,12 @@ export default function Reports() {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div className="rounded-2xl bg-slate-800 p-6 shadow-lg">
           <p className="text-gray-400">Anzahl Sendungen</p>
-          <h2 className="text-3xl font-bold mt-2">12</h2>
+          <h2 className="mt-2 text-3xl font-bold">{sendungen.length}</h2>
         </div>
 
         <div className="rounded-2xl bg-slate-800 p-6 shadow-lg">
           <p className="text-gray-400">Anzahl Fahrzeuge</p>
-          <h2 className="text-3xl font-bold mt-2">5</h2>
+          <h2 className="mt-2 text-3xl font-bold">{fahrzeuge.length}</h2>
         </div>
       </div>
     </div>

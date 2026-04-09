@@ -1,47 +1,32 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getSendungen } from "../services/api";
 
 export default function DashboardV2() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sendungen, setSendungen] = useState([]);
 
-  const sendungen = [
-    {
-      id: 1,
-      status: "Unterwegs",
-      startadresse: "Bern",
-      zieladresse: "Zürich",
-    },
-    {
-      id: 2,
-      status: "Geliefert",
-      startadresse: "Basel",
-      zieladresse: "Luzern",
-    },
-    {
-      id: 3,
-      status: "Wartet",
-      startadresse: "Genf",
-      zieladresse: "St. Gallen",
-    },
-    {
-      id: 4,
-      status: "In Bearbeitung",
-      startadresse: "Thun",
-      zieladresse: "Interlaken",
-    },
-  ];
+  useEffect(() => {
+    getSendungen().then((data) => {
+      setSendungen(data);
+    });
+  }, []);
 
   const getStatusStyle = (status) => {
-    switch (status) {
-      case "Geliefert":
+    switch (status?.toLowerCase()) {
+      case "geliefert":
         return "bg-green-500/20 text-green-300";
-      case "Unterwegs":
+      case "unterwegs":
         return "bg-blue-500/20 text-blue-300";
-      case "Wartet":
+      case "wartet":
         return "bg-yellow-500/20 text-yellow-300";
-      case "In Bearbeitung":
+      case "in bearbeitung":
         return "bg-purple-500/20 text-purple-300";
+      case "offen":
+        return "bg-orange-500/20 text-orange-300";
+      case "zugewiesen":
+        return "bg-cyan-500/20 text-cyan-300";
       default:
         return "bg-slate-500/20 text-slate-300";
     }
@@ -100,10 +85,18 @@ export default function DashboardV2() {
         <table className="min-w-full">
           <thead className="bg-slate-700/70">
             <tr>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">ID</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">Status</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">Startadresse</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">Zieladresse</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">
+                ID
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">
+                Status
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">
+                Startadresse
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">
+                Zieladresse
+              </th>
             </tr>
           </thead>
 
@@ -113,7 +106,10 @@ export default function DashboardV2() {
                 key={sendung.id}
                 className="border-t border-slate-700 hover:bg-slate-700/40 transition"
               >
-                <td className="px-6 py-4 text-sm text-slate-200">{sendung.id}</td>
+                <td className="px-6 py-4 text-sm text-slate-200">
+                  {sendung.id}
+                </td>
+
                 <td className="px-6 py-4 text-sm">
                   <span
                     className={`rounded-full px-3 py-1 text-xs font-medium ${getStatusStyle(
@@ -123,8 +119,14 @@ export default function DashboardV2() {
                     {sendung.status}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-sm text-slate-300">{sendung.startadresse}</td>
-                <td className="px-6 py-4 text-sm text-slate-300">{sendung.zieladresse}</td>
+
+                <td className="px-6 py-4 text-sm text-slate-300">
+                  {sendung.startadresse}
+                </td>
+
+                <td className="px-6 py-4 text-sm text-slate-300">
+                  {sendung.zieladresse}
+                </td>
               </tr>
             ))}
           </tbody>
