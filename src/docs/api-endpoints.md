@@ -44,3 +44,12 @@ Geprueft werden:
 - erlaubte Lieferungstypen
 - positives Gewicht
 - gueltige Datumsreihenfolge  
+
+## Filter fuer Sendungen
+
+- GET /sendungen?status=offen
+- GET /sendungen?prioritaet=hoch
+- GET /sendungen?kundenId=1
+- GET /sendungen?status=offen&prioritaet=hoch
+
+Diese Filter koennen einzeln oder kombiniert verwendet werden.

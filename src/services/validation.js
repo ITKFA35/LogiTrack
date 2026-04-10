@@ -1,6 +1,12 @@
 const SENDUNG_STATUS = ["offen", "zugewiesen", "wartet", "unterwegs", "geliefert"];
 const PRIORITAETEN = ["niedrig", "normal", "hoch"];
 const LIEFERUNG_TYPEN = ["Paket", "Palette"];
+const STATUS_FLOW = {
+  offen: ["zugewiesen"],
+  zugewiesen: ["unterwegs"],
+  unterwegs: ["geliefert"],
+  geliefert: []
+};
 
 export function validateSendung(sendung, options = {}) {
   const { requireId = true } = options;
@@ -47,3 +53,22 @@ export function validateSendung(sendung, options = {}) {
     errors,
   };
 }
+
+export function validateStatusChange(oldStatus, newStatus) {
+  if (!STATUS_FLOW[oldStatus]) {
+    return {
+      valid: false,
+      error: `Unbekannter Status: ${oldStatus}`
+    };
+  }
+
+  if (!STATUS_FLOW[oldStatus].includes(newStatus)) {
+    return {
+      valid: false,
+      error: `Ungueltiger Statuswechsel: ${oldStatus} -> ${newStatus}`
+    };
+  }
+
+  return { valid: true };
+}
+
