@@ -10,7 +10,7 @@ export default function Dashboard() {
   const buttons = [
     { name: "Transportmanagement", path: "/transport" },
     { name: "Flottenmanagement", path: "/flotte" },
-    { name: "Lagen & Inventar", path: "/inventar" },
+    { name: "Lager & Inventar", path: "/inventar" },
     { name: "Reporting & Dashboard", path: "/reports" },
     { name: "Kunden & Partnerfunktion", path: "/Customer-Portal" },
   ];
@@ -34,7 +34,7 @@ export default function Dashboard() {
             </button>
           ))}
         </div>
-                  
+
       </div>
     </div>
   );
