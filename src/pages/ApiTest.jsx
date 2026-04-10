@@ -4,6 +4,9 @@ import {
   updateSendung,
   deleteSendung,
 } from "../services/api";
+import { patchSendung } from "../services/api";
+import { getSendungenFiltered } from "../services/api";
+import { getSendungenSorted, getSendungenAdvanced } from "../services/api";
 
 export default function ApiTest() {
   async function handleGet() {
@@ -99,6 +102,62 @@ export default function ApiTest() {
     }
   }
 
+  async function handlePatch() {
+  try {
+    const result = await patchSendung(1001, {
+      status: "zugewiesen"
+    });
+
+    console.log("PATCH erfolgreich", result);
+    alert("PATCH erfolgreich");
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
+  }
+}
+
+async function handleFilter() {
+  try {
+    const result = await getSendungenFiltered({
+      status: "offen",
+      prioritaet: "hoch",
+    });
+
+    console.log("FILTER /sendungen?status=offen&prioritaet=hoch", result);
+    alert(`Filter erfolgreich. Treffer: ${result.length}`);
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
+  }
+}
+
+async function handleSort() {
+  try {
+    const result = await getSendungenSorted("gewichtKg", "desc");
+    console.log("SORT /sendungen?_sort=gewichtKg&_order=desc", result);
+    alert(`Sortierung erfolgreich. Erster Wert: ${result[0]?.gewichtKg ?? "kein Wert"}`);
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
+  }
+}
+
+async function handleAdvanced() {
+  try {
+    const result = await getSendungenAdvanced({
+      status: "offen",
+      sortBy: "lieferdatum",
+      order: "asc",
+    });
+
+    console.log("ADVANCED /sendungen?status=offen&_sort=lieferdatum&_order=asc", result);
+    alert(`Advanced erfolgreich. Treffer: ${result.length}`);
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
+  }
+}
+
   return (
     <div className="min-h-screen bg-slate-950 p-10 text-white">
       <h1 className="mb-8 text-4xl font-bold">API Test</h1>
@@ -137,6 +196,34 @@ export default function ApiTest() {
           className="rounded-xl bg-orange-600 px-6 py-3 font-semibold"
         >
           Ungueltigen POST testen
+        </button>
+
+        <button
+          onClick={handlePatch}
+          className="rounded-xl bg-purple-600 px-6 py-3 font-semibold"
+        >
+          PATCH testen
+        </button>
+
+        <button
+          onClick={handleFilter}
+          className="rounded-xl bg-cyan-600 px-6 py-3 font-semibold"
+        >
+          FILTER testen
+        </button>
+
+        <button
+        onClick={handleSort}
+        className="rounded-xl bg-teal-600 px-6 py-3 font-semibold"
+        >
+          SORT testen
+        </button>
+
+        <button
+        onClick={handleAdvanced}
+        className="rounded-xl bg-indigo-600 px-6 py-3 font-semibold"
+        >
+        ADVANCED testen
         </button>
       </div>
 

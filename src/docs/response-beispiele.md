@@ -47,3 +47,25 @@
 {
   "error": "Validierungsfehler: startadresse fehlt, zieladresse fehlt, ungueltiger status: falsch"
 }
+
+## GET /sendungen?status=offen&prioritaet=hoch
+
+```json
+[
+  {
+    "id": 1008,
+    "kundenId": 4,
+    "fahrerId": 3,
+    "fahrzeugId": 3,
+    "startadresse": "Lausanne, Rue Centrale 15",
+    "zieladresse": "Fribourg, Route du Lac 9",
+    "erfassungsdatum": "2026-04-07",
+    "lieferdatum": "2026-04-09",
+    "status": "offen",
+    "prioritaet": "hoch",
+    "lieferungTyp": "Paket",
+    "gewichtKg": 65,
+    "benachrichtigung": true,
+    "bemerkungen": "Empfang vorab anrufen"
+  }
+]

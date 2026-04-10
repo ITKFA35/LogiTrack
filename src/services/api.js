@@ -1,4 +1,5 @@
 import { validateSendung } from "./validation";
+import { validateStatusChange } from "./validation";
 const BASE_URL = "http://localhost:3001";
 
 async function fetchJson(url) {
@@ -141,4 +142,109 @@ export async function deleteSendung(id) {
   }
 
   return true;
+}
+
+export async function patchSendung(id, partialData) {
+  // aktuelle Sendung holen
+  const current = await fetch(`${BASE_URL}/sendungen/${id}`).then(r => r.json());
+
+  // nur wenn status geändert wird → prüfen
+  if (partialData.status && partialData.status !== current.status) {
+    const check = validateStatusChange(current.status, partialData.status);
+
+    if (!check.valid) {
+      throw new Error(check.error);
+    }
+  }
+
+  const response = await fetch(`${BASE_URL}/sendungen/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(partialData),
+  });
+
+  if (!response.ok) {
+    throw new Error(`API Fehler beim Patch: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function getSendungenFiltered(filters = {}) {
+  const params = new URLSearchParams();
+
+  if (filters.status) {
+    params.append("status", filters.status);
+  }
+
+  if (filters.prioritaet) {
+    params.append("prioritaet", filters.prioritaet);
+  }
+
+  if (filters.kundenId) {
+    params.append("kundenId", String(filters.kundenId));
+  }
+
+  const queryString = params.toString();
+  const url = queryString
+    ? `${BASE_URL}/sendungen?${queryString}`
+    : `${BASE_URL}/sendungen`;
+
+  return fetchJson(url);
+}
+
+export async function getSendungenSorted(sortBy, order = "asc") {
+  const allowedSortFields = ["lieferdatum", "erfassungsdatum", "gewichtKg", "status", "prioritaet"];
+
+  if (!allowedSortFields.includes(sortBy)) {
+    throw new Error(`Ungueltiges Sortierfeld: ${sortBy}`);
+  }
+
+  const allowedOrders = ["asc", "desc"];
+  if (!allowedOrders.includes(order)) {
+    throw new Error(`Ungueltige Sortierreihenfolge: ${order}`);
+  }
+
+  return fetchJson(`${BASE_URL}/sendungen?_sort=${sortBy}&_order=${order}`);
+}
+
+export async function getSendungenAdvanced(options = {}) {
+  const params = new URLSearchParams();
+
+  if (options.status) {
+    params.append("status", options.status);
+  }
+
+  if (options.prioritaet) {
+    params.append("prioritaet", options.prioritaet);
+  }
+
+  if (options.kundenId) {
+    params.append("kundenId", String(options.kundenId));
+  }
+
+  const allowedSortFields = ["lieferdatum", "erfassungsdatum", "gewichtKg", "status", "prioritaet"];
+  if (options.sortBy) {
+    if (!allowedSortFields.includes(options.sortBy)) {
+      throw new Error(`Ungueltiges Sortierfeld: ${options.sortBy}`);
+    }
+
+    params.append("_sort", options.sortBy);
+  }
+
+  const allowedOrders = ["asc", "desc"];
+  if (options.order) {
+    if (!allowedOrders.includes(options.order)) {
+      throw new Error(`Ungueltige Sortierreihenfolge: ${options.order}`);
+    }
+
+    params.append("_order", options.order);
+  }
+
+  const query = params.toString();
+  const url = query ? `${BASE_URL}/sendungen?${query}` : `${BASE_URL}/sendungen`;
+
+  return fetchJson(url);
 }

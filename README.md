@@ -27,3 +27,9 @@ npm run server
 
 # Terminal 2
 npm run dev
+
+# Sendungen abrufen per URL mit Status offen
+http://localhost:3001/sendungen?status=offen
+
+# Sendungen abrufen per URL mit Status offen + prirität hoch
+http://localhost:3001/sendungen?status=offen&prioritaet=hoch
