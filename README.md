@@ -18,12 +18,16 @@ Note: This will impact Vite dev & build performances.
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
 
 
-## Start
-
 npm install
-
+ 
 # Terminal 1
 npm run server
-
+ 
 # Terminal 2
 npm run dev
+ 
+# Sendungen abrufen per URL mit Status offen
+http://localhost:3001/sendungen?status=offen
+ 
+# Sendungen abrufen per URL mit Status offen + prirität hoch
+http://localhost:3001/sendungen?status=offen&prioritaet=hoch
