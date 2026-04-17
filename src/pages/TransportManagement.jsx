@@ -72,7 +72,7 @@ export default function TransportManagement() {
           <div className="md:col-span-2 flex justify-end gap-3 pt-4">
             <button
               type="button"
-              onClick={() => navigate("/reports/dashboard")}
+              onClick={() => navigate("/")}
               className="rounded-lg bg-slate-700 px-5 py-3 hover:bg-slate-600 transition"
             >
               Abbrechen
