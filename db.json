@@ -346,22 +346,6 @@
       "benachrichtigung": false,
       "bemerkungen": "API Test Sendung",
       "id": "4sOuKUfIaeQ"
-    },
-    {
-      "kundenId": 1,
-      "fahrerId": 1,
-      "fahrzeugId": 2,
-      "startadresse": "Bern, Testweg 1",
-      "zieladresse": "Zuerich, Teststrasse 99",
-      "erfassungsdatum": "2026-04-08",
-      "lieferdatum": "2026-04-12",
-      "status": "offen",
-      "prioritaet": "normal",
-      "lieferungTyp": "Paket",
-      "gewichtKg": 55,
-      "benachrichtigung": false,
-      "bemerkungen": "API Test Sendung",
-      "id": "YgHafmRKu4s"
     }
-  ]  
+  ]
 }

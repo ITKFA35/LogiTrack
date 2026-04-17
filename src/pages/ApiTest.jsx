@@ -158,6 +158,90 @@ async function handleAdvanced() {
   }
 }
 
+async function handleEmptyFieldTest() {
+  try {
+    const kaputteSendung = {
+      kundenId: 1,
+      startadresse: "",   // 👈 bewusst leer
+      zieladresse: "Zuerich, Teststrasse 99",
+      status: "offen",
+      prioritaet: "normal",
+      lieferungTyp: "Paket",
+      gewichtKg: 55,
+      erfassungsdatum: "2026-04-08",
+      lieferdatum: "2026-04-12"
+    };
+
+    await createSendung(kaputteSendung);
+  } catch (error) {
+    console.error(error);
+    alert(`Erwarteter Fehler: ${error.message}`);
+  }
+}
+
+async function handleNegativeWeightTest() {
+  try {
+    const kaputteSendung = {
+      kundenId: 1,
+      startadresse: "Bern, Testweg 1",
+      zieladresse: "Zuerich, Teststrasse 99",
+      status: "offen",
+      prioritaet: "normal",
+      lieferungTyp: "Paket",
+      gewichtKg: -5,
+      erfassungsdatum: "2026-04-08",
+      lieferdatum: "2026-04-12"
+    };
+
+    await createSendung(kaputteSendung);
+  } catch (error) {
+    console.error(error);
+    alert(`Erwarteter Fehler: ${error.message}`);
+  }
+}
+
+async function handleInvalidDateTest() {
+  try {
+    const kaputteSendung = {
+      kundenId: 1,
+      startadresse: "Bern, Testweg 1",
+      zieladresse: "Zuerich, Teststrasse 99",
+      status: "offen",
+      prioritaet: "normal",
+      lieferungTyp: "Paket",
+      gewichtKg: 55,
+      erfassungsdatum: "2026-04-12",
+      lieferdatum: "2026-04-08"
+    };
+
+    await createSendung(kaputteSendung);
+  } catch (error) {
+    console.error(error);
+    alert(`Erwarteter Fehler: ${error.message}`);
+  }
+}
+
+async function handleInvalidStatusTest() {
+  try {
+    const kaputteSendung = {
+      kundenId: 1,
+      startadresse: "Bern, Testweg 1",
+      zieladresse: "Zuerich, Teststrasse 99",
+      status: "falsch",   // 👈 bewusst ungültig
+      prioritaet: "normal",
+      lieferungTyp: "Paket",
+      gewichtKg: 55,
+      erfassungsdatum: "2026-04-08",
+      lieferdatum: "2026-04-12"
+    };
+
+    await createSendung(kaputteSendung);
+  } catch (error) {
+    console.error(error);
+    alert(`Erwarteter Fehler: ${error.message}`);
+  }
+}
+
   return (
     <div className="min-h-screen bg-slate-950 p-10 text-white">
       <h1 className="mb-8 text-4xl font-bold">API Test</h1>
@@ -225,6 +309,31 @@ async function handleAdvanced() {
         >
         ADVANCED testen
         </button>
+
+        <button
+        onClick={handleEmptyFieldTest}
+        className="rounded-xl bg-pink-600 px-6 py-3 font-semibold"
+        >
+        Leere Felder testen
+      </button>
+      <button
+      onClick={handleNegativeWeightTest}
+      className="rounded-xl bg-rose-600 px-6 py-3 font-semibold"
+      >
+      Negatives Gewicht testen
+      </button>
+      <button
+      onClick={handleInvalidDateTest}
+      className="rounded-xl bg-fuchsia-600 px-6 py-3 font-semibold"
+      >
+      Falsches Datum testen
+      </button>
+      <button
+      onClick={handleInvalidStatusTest}
+      className="rounded-xl bg-red-700 px-6 py-3 font-semibold"
+      >
+      Ungueltigen Status testen
+      </button>
       </div>
 
       <p className="mt-8 text-slate-300">
