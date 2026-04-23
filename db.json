@@ -411,5 +411,6 @@
       "bemerkungen": "API Test Sendung",
       "id": "Zpxu78Y"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
