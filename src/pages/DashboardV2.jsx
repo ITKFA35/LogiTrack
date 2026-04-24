@@ -38,8 +38,6 @@ export default function DashboardV2() {
         return "bg-blue-500/20 text-blue-300";
       case "wartet":
         return "bg-yellow-500/20 text-yellow-300";
-      case "in bearbeitung":
-        return "bg-purple-500/20 text-purple-300";
       case "offen":
         return "bg-orange-500/20 text-orange-300";
       case "zugewiesen":
@@ -411,7 +409,6 @@ export default function DashboardV2() {
                     <option value="unterwegs">unterwegs</option>
                     <option value="geliefert">geliefert</option>
                     <option value="wartet">wartet</option>
-                    <option value="in bearbeitung">in bearbeitung</option>
                   </select>
                 </div>
 

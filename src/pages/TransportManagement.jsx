@@ -200,7 +200,6 @@ export default function TransportManagement() {
               <option value="unterwegs">unterwegs</option>
               <option value="geliefert">geliefert</option>
               <option value="wartet">wartet</option>
-              <option value="in bearbeitung">in bearbeitung</option>
             </select>
           </div>
 
