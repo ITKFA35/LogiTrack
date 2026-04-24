@@ -69,10 +69,15 @@ export default function Reports() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div className="rounded-2xl bg-slate-800 p-6 shadow-lg">
+        <button
+          type="button"
+          onClick={() => navigate("/reports/dashboard")}
+          className="rounded-2xl bg-slate-800 p-6 text-left shadow-lg transition hover:bg-slate-700/80"
+        >
           <p className="text-gray-400">Anzahl Sendungen</p>
           <h2 className="mt-2 text-3xl font-bold">{sendungen.length}</h2>
-        </div>
+        </button>
+
 
         <div className="rounded-2xl bg-slate-800 p-6 shadow-lg">
           <p className="text-gray-400">Anzahl Fahrzeuge</p>
