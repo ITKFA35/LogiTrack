@@ -228,12 +228,13 @@ export default function TransportManagement() {
 
           <div>
             <label className="mb-2 block text-sm text-slate-300">Lieferung Typ</label>
-            <input
-              type="text"
+            <select 
               value={formData.lieferungTyp}
               onChange={(e) => handleChange("lieferungTyp", e.target.value)}
-              className="w-full rounded-lg border border-slate-600 bg-slate-900 px-4 py-3 text-white outline-none focus:border-blue-500"
-            />
+              className="w-full rounded-lg border border-slate-600 bg-slate-900 px-4 py-3 text-white outline-none focus:border-blue-500">
+             <option value="Paket">Paket</option>
+             <option value="Palette">Palette</option>                
+            </select>
           </div>
 
           <div>
