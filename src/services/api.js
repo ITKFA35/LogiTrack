@@ -8,6 +8,12 @@ function addParam(params, key, value) {
   }
 }
 
+function addParam(params, key, value) {
+  if (value && value.trim()) {
+    params.append(key, value.trim());
+  }
+}
+
 async function fetchJson(url) {
   const response = await fetch(url);
 
@@ -333,17 +339,24 @@ export async function patchSendung(id, partialData) {
 export async function getSendungenFiltered(filters = {}) {
   const params = new URLSearchParams();
 
-  if (filters.status) {
-    params.append("status", filters.status);
-  }
-
-  if (filters.prioritaet) {
-    params.append("prioritaet", filters.prioritaet);
-  }
+  addParam(params, "status", filters.status);
+  addParam(params, "prioritaet", filters.prioritaet);
 
   if (filters.kundenId) {
     params.append("kundenId", String(filters.kundenId));
   }
+
+  addParam(params, "startStrasse", filters.startStrasse);
+  addParam(params, "startHausnummer", filters.startHausnummer);
+  addParam(params, "startPlz", filters.startPlz);
+  addParam(params, "startOrt", filters.startOrt);
+  addParam(params, "startLand", filters.startLand);
+
+  addParam(params, "zielStrasse", filters.zielStrasse);
+  addParam(params, "zielHausnummer", filters.zielHausnummer);
+  addParam(params, "zielPlz", filters.zielPlz);
+  addParam(params, "zielOrt", filters.zielOrt);
+  addParam(params, "zielLand", filters.zielLand);
 
   const queryString = params.toString();
   const url = queryString
@@ -354,7 +367,23 @@ export async function getSendungenFiltered(filters = {}) {
 }
 
 export async function getSendungenSorted(sortBy, order = "asc") {
-  const allowedSortFields = ["lieferdatum", "erfassungsdatum", "gewichtKg", "status", "prioritaet"];
+  const allowedSortFields = [
+    "lieferdatum",
+    "erfassungsdatum",
+    "gewichtKg",
+    "status",
+    "prioritaet",
+    "startStrasse",
+    "startPlz",
+    "startOrt",
+    "startLand",
+    "zielStrasse",
+    "zielPlz",
+    "zielOrt",
+    "startHausnummer",
+    "zielHausnummer",
+    "zielLand"
+  ];
 
   if (!allowedSortFields.includes(sortBy)) {
     throw new Error(`Ungueltiges Sortierfeld: ${sortBy}`);
@@ -371,19 +400,43 @@ export async function getSendungenSorted(sortBy, order = "asc") {
 export async function getSendungenAdvanced(options = {}) {
   const params = new URLSearchParams();
 
-  if (options.status) {
-    params.append("status", options.status);
-  }
-
-  if (options.prioritaet) {
-    params.append("prioritaet", options.prioritaet);
-  }
+  addParam(params, "status", options.status);
+  addParam(params, "prioritaet", options.prioritaet);
 
   if (options.kundenId) {
     params.append("kundenId", String(options.kundenId));
   }
 
-  const allowedSortFields = ["lieferdatum", "erfassungsdatum", "gewichtKg", "status", "prioritaet"];
+  addParam(params, "startStrasse", options.startStrasse);
+  addParam(params, "startHausnummer", options.startHausnummer);
+  addParam(params, "startPlz", options.startPlz);
+  addParam(params, "startOrt", options.startOrt);
+  addParam(params, "startLand", options.startLand);
+
+  addParam(params, "zielStrasse", options.zielStrasse);
+  addParam(params, "zielHausnummer", options.zielHausnummer);
+  addParam(params, "zielPlz", options.zielPlz);
+  addParam(params, "zielOrt", options.zielOrt);
+  addParam(params, "zielLand", options.zielLand);
+
+  const allowedSortFields = [
+    "lieferdatum",
+    "erfassungsdatum",
+    "gewichtKg",
+    "status",
+    "prioritaet",
+    "startStrasse",
+    "startPlz",
+    "startOrt",
+    "startLand",
+    "zielStrasse",
+    "zielPlz",
+    "zielOrt",
+    "startHausnummer",
+    "zielHausnummer",
+    "zielLand"
+  ];
+
   if (options.sortBy) {
     if (!allowedSortFields.includes(options.sortBy)) {
       throw new Error(`Ungueltiges Sortierfeld: ${options.sortBy}`);

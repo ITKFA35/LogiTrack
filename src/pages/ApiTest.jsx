@@ -26,8 +26,16 @@ export default function ApiTest() {
         kundenId: 1,
         fahrerId: 1,
         fahrzeugId: 2,
-        startadresse: "Bern, Testweg 1",
-        zieladresse: "Zuerich, Teststrasse 99",
+        startStrasse: "Testweg",
+        startHausnummer: "1",
+        startPlz: "3000",
+        startOrt: "Bern",
+        startLand: "CH",
+        zielStrasse: "Teststrasse",
+        zielHausnummer: "99",
+        zielPlz: "8000",
+        zielOrt: "Zuerich",
+        zielLand: "CH",
         erfassungsdatum: "2026-04-08",
         lieferdatum: "2026-04-12",
         status: "offen",
@@ -87,13 +95,23 @@ export default function ApiTest() {
 
   async function handleInvalidPost() {
     try {
-      const kaputteSendung = {
-        kundenId: 1,
-        status: "falsch",
-        prioritaet: "superhoch",
-        lieferungTyp: "Kiste",
-        gewichtKg: -5
-      };
+    const kaputteSendung = {
+      kundenId: 1,
+      startStrasse: "Testweg",
+      startHausnummer: "1",
+      startPlz: "3000",
+      startOrt: "Bern",
+      startLand: "CH",
+      zielStrasse: "Teststrasse",
+      zielHausnummer: "99",
+      zielPlz: "8000",
+      zielOrt: "Zuerich",
+      zielLand: "CH",
+      status: "falsch",
+      prioritaet: "superhoch",
+      lieferungTyp: "Kiste",
+      gewichtKg: -5
+    };
 
       await createSendung(kaputteSendung);
     } catch (error) {
@@ -119,11 +137,11 @@ export default function ApiTest() {
 async function handleFilter() {
   try {
     const result = await getSendungenFiltered({
-      status: "offen",
-      prioritaet: "hoch",
+      startOrt: "Basel",
+      zielOrt: "Bern",
     });
 
-    console.log("FILTER /sendungen?status=offen&prioritaet=hoch", result);
+    console.log("FILTER /sendungen?startOrt=Basel&zielOrt=Bern", result);
     alert(`Filter erfolgreich. Treffer: ${result.length}`);
   } catch (error) {
     console.error(error);
@@ -133,9 +151,9 @@ async function handleFilter() {
 
 async function handleSort() {
   try {
-    const result = await getSendungenSorted("gewichtKg", "desc");
-    console.log("SORT /sendungen?_sort=gewichtKg&_order=desc", result);
-    alert(`Sortierung erfolgreich. Erster Wert: ${result[0]?.gewichtKg ?? "kein Wert"}`);
+    const result = await getSendungenSorted("startOrt", "asc");
+    console.log("SORT /sendungen?_sort=startOrt&_order=asc", result);
+    alert(`Sortierung erfolgreich. Erster Wert: ${result[0]?.startOrt ?? "kein Wert"}`);
   } catch (error) {
     console.error(error);
     alert(error.message);
@@ -145,12 +163,12 @@ async function handleSort() {
 async function handleAdvanced() {
   try {
     const result = await getSendungenAdvanced({
-      status: "offen",
-      sortBy: "lieferdatum",
+      startLand: "CH",
+      sortBy: "zielOrt",
       order: "asc",
     });
 
-    console.log("ADVANCED /sendungen?status=offen&_sort=lieferdatum&_order=asc", result);
+    console.log("ADVANCED /sendungen?startLand=CH&_sort=zielOrt&_order=asc", result);
     alert(`Advanced erfolgreich. Treffer: ${result.length}`);
   } catch (error) {
     console.error(error);
@@ -162,8 +180,16 @@ async function handleEmptyFieldTest() {
   try {
     const kaputteSendung = {
       kundenId: 1,
-      startadresse: "",   // 👈 bewusst leer
-      zieladresse: "Zuerich, Teststrasse 99",
+      startStrasse: "",
+      startHausnummer: "1",
+      startPlz: "3000",
+      startOrt: "Bern",
+      startLand: "CH",
+      zielStrasse: "Teststrasse",
+      zielHausnummer: "99",
+      zielPlz: "8000",
+      zielOrt: "Zuerich",
+      zielLand: "CH",
       status: "offen",
       prioritaet: "normal",
       lieferungTyp: "Paket",
@@ -183,8 +209,16 @@ async function handleNegativeWeightTest() {
   try {
     const kaputteSendung = {
       kundenId: 1,
-      startadresse: "Bern, Testweg 1",
-      zieladresse: "Zuerich, Teststrasse 99",
+      startStrasse: "Testweg",
+      startHausnummer: "1",
+      startPlz: "3000",
+      startOrt: "Bern",
+      startLand: "CH",
+      zielStrasse: "Teststrasse",
+      zielHausnummer: "99",
+      zielPlz: "8000",
+      zielOrt: "Zuerich",
+      zielLand: "CH",
       status: "offen",
       prioritaet: "normal",
       lieferungTyp: "Paket",
@@ -204,8 +238,16 @@ async function handleInvalidDateTest() {
   try {
     const kaputteSendung = {
       kundenId: 1,
-      startadresse: "Bern, Testweg 1",
-      zieladresse: "Zuerich, Teststrasse 99",
+      startStrasse: "Testweg",
+      startHausnummer: "1",
+      startPlz: "3000",
+      startOrt: "Bern",
+      startLand: "CH",
+      zielStrasse: "Teststrasse",
+      zielHausnummer: "99",
+      zielPlz: "8000",
+      zielOrt: "Zuerich",
+      zielLand: "CH",
       status: "offen",
       prioritaet: "normal",
       lieferungTyp: "Paket",
@@ -225,9 +267,17 @@ async function handleInvalidStatusTest() {
   try {
     const kaputteSendung = {
       kundenId: 1,
-      startadresse: "Bern, Testweg 1",
-      zieladresse: "Zuerich, Teststrasse 99",
-      status: "falsch",   // 👈 bewusst ungültig
+      startStrasse: "Testweg",
+      startHausnummer: "1",
+      startPlz: "3000",
+      startOrt: "Bern",
+      startLand: "CH",
+      zielStrasse: "Teststrasse",
+      zielHausnummer: "99",
+      zielPlz: "8000",
+      zielOrt: "Zuerich",
+      zielLand: "CH",
+      status: "falsch",
       prioritaet: "normal",
       lieferungTyp: "Paket",
       gewichtKg: 55,

@@ -4,8 +4,16 @@
 Pflichtfelder:
 - id
 - kundenId
-- startadresse
-- zieladresse
+- startStrasse
+- startHausnummer
+- startPlz
+- startOrt
+- startLand
+- zielStrasse
+- zielHausnummer
+- zielPlz
+- zielOrt
+- zielLand
 - erfassungsdatum
 - lieferdatum
 - status
