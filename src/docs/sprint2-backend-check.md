@@ -9,8 +9,16 @@
 
 ## Wichtige Felder fuer Frontend
 - id
-- startadresse
-- zieladresse
+- startStrasse
+- startHausnummer
+- startPlz
+- startOrt
+- startLand
+- zielStrasse
+- zielHausnummer
+- zielPlz
+- zielOrt
+- zielLand
 - status
 - prioritaet
 - lieferdatum
