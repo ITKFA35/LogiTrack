@@ -51,10 +51,12 @@ export default function TransportManagement() {
 
   const [year, month, day] = dateValue.split("-");
   return `${day}.${month}.${year}`;
-};
+  };
 
   const formatDateToApi = (dateValue) => {
     if (!dateValue) return "";
+
+    if (dateValue.includes("-")) return dateValue;
 
     const [day, month, year] = dateValue.split(".");
     return `${year}-${month}-${day}`;
@@ -163,6 +165,7 @@ export default function TransportManagement() {
 
   const newSendung = {
     ...formData,
+    lieferdatum: formatDateToApi(formData.lieferdatum),
     gewichtKg: formData.gewichtKg === "" ? 0 : Number(formData.gewichtKg),
     kundenId: Number(formData.kundenId),
     fahrerId: Number(formData.fahrerId),
@@ -185,6 +188,7 @@ export default function TransportManagement() {
   return (
     <div className="min-h-screen bg-slate-900 text-white p-8 md:p-10">
       <button
+        type="button"
         onClick={() => navigate("/")}
         className="mb-8 rounded-lg bg-slate-700 px-4 py-2 hover:bg-slate-600 transition"
       >
