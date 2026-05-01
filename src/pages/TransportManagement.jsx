@@ -65,12 +65,31 @@ export default function TransportManagement() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white p-8 md:p-10">
-      <button
-        onClick={() => navigate("/reports/dashboard")}
-        className="mb-8 rounded-lg bg-slate-700 px-4 py-2 hover:bg-slate-600 transition"
-      >
-        ← Zur Startseite
-      </button>
+      <div className="mb-8 flex flex-wrap gap-3">
+  <button
+    type="button"
+    onClick={() => navigate("/")}
+    className="rounded-lg bg-slate-700 px-4 py-2 hover:bg-slate-600 transition"
+  >
+    ← Zur Startseite
+  </button>
+
+  <button
+    type="button"
+    onClick={() => navigate("/reports/dashboard")}
+    className="rounded-lg bg-blue-700 px-4 py-2 hover:bg-blue-600 transition"
+  >
+    Sendungen
+  </button>
+
+  <button
+    type="button"
+    onClick={() => navigate("/reports")}
+    className="rounded-lg bg-indigo-700 px-4 py-2 hover:bg-indigo-600 transition"
+  >
+    Reports
+  </button>
+</div>
 
       <div className="mb-8">
         <p className="text-sm text-slate-400">LogiTrack</p>
@@ -271,10 +290,12 @@ export default function TransportManagement() {
             />
           </div>
 
+
+
           <div className="md:col-span-2 flex justify-end gap-3 pt-4">
             <button
               type="button"
-              onClick={() => navigate("/reports/dashboard")}
+              onClick={() => navigate("/")}
               className="rounded-lg bg-slate-700 px-5 py-3 hover:bg-slate-600 transition"
             >
               Abbrechen
