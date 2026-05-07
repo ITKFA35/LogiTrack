@@ -6,6 +6,7 @@ import Inventory from "./pages/Inventory";
 import Reports from "./pages/Reports";
 import CustomerPartnerPortal from "./pages/CustomerPartnerPortal";
 import DashboardV2 from "./pages/DashboardV2";
+import FahrzeugUebersicht from "./pages/FahrzeugUebersicht";
 
 import ApiTest from "./pages/ApiTest";
 
@@ -20,6 +21,7 @@ function App() {
       <Route path="/inventar" element={<Inventory />} />
       <Route path="/reports" element={<Reports />} />
       <Route path="/api-test" element={<ApiTest />} />
+      <Route path="/fahrzeuge" element={<FahrzeugUebersicht />} />
     </Routes>
   );
 }

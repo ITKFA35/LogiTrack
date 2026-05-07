@@ -6,6 +6,7 @@ export default function TransportManagement() {
   const navigate = useNavigate();
   const datePickerRef = useRef(null);
   const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState("");
 
   const [formData, setFormData] = useState({
     kundenId: 1,
@@ -42,9 +43,20 @@ export default function TransportManagement() {
   };
 
   const inputClass = (field) =>
-  `w-full rounded-lg border bg-slate-900 px-4 py-3 text-white outline-none focus:border-blue-500 ${
-    errors[field] ? "border-red-500" : "border-slate-600"
-  }`;
+  `w-full rounded-lg border-2 px-4 py-3 text-white outline-none transition
+   focus:outline-none focus:ring-2
+   ${
+     errors[field]
+       ? "border-red-500 bg-red-500/10 focus:ring-red-500/40"
+       : "border-slate-600 bg-slate-900 focus:border-blue-500 focus:ring-blue-500/20"
+   }`;
+
+  const ErrorMessage = ({ field }) =>
+  errors[field] ? (
+    <p className="mt-1 text-xs text-red-400">
+      {errors[field]}
+    </p>
+  ) : null;
   
   const formatDateToGerman = (dateValue) => {
   if (!dateValue) return "";
@@ -67,7 +79,7 @@ export default function TransportManagement() {
     const messages = [];
 
     const addError = (field, message) => {
-      newErrors[field] = true;
+      newErrors[field] = message;
       messages.push(message);
     };
 
@@ -107,6 +119,11 @@ export default function TransportManagement() {
 
     if (!formData.startHausnummer.trim()) {
       addError("startHausnummer", "Startadresse: Bitte gib eine Hausnummer ein.");
+    } else if (!/^\d+$/.test(formData.startHausnummer)) {
+      addError(
+        "startHausnummer",
+        "Die Hausnummer darf nur Zahlen enthalten."
+      );
     }
 
     checkPlz("startPlz", "startLand", "Startadresse");
@@ -123,6 +140,11 @@ export default function TransportManagement() {
 
     if (!formData.zielHausnummer.trim()) {
       addError("zielHausnummer", "Zieladresse: Bitte gib eine Hausnummer ein.");
+    } else if (!/^\d+$/.test(formData.zielHausnummer)) {
+      addError(
+        "zielHausnummer",
+        "Die Hausnummer darf nur Zahlen enthalten."
+      );
     }
 
     checkPlz("zielPlz", "zielLand", "Zieladresse");
@@ -145,18 +167,32 @@ export default function TransportManagement() {
 
     setErrors(newErrors);
 
-    if (messages.length === 10) {
-      alert("Bitte alle Pflichtfelder ausfüllen.");
-      return false;
-    }
+      const firstErrorField = Object.keys(newErrors)[0];
 
-    if (messages.length > 0) {
-      alert("Bitte korrigieren:\n\n" + messages.join("\n"));
-      return false;
-    }
+      if (firstErrorField) {
+        const element = document.getElementById(firstErrorField);
 
-    return true;
-  };
+        if (element) {
+          element.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+
+          element.focus();
+        }
+      }
+
+      if (messages.length === 10) {
+        alert("Bitte alle Pflichtfelder ausfüllen.");
+        return false;
+      }
+
+      if (messages.length > 0) {
+        return false;
+      }
+
+      return true;
+    };
 
   const handleSubmit = async (e) => {
   e.preventDefault();
@@ -176,9 +212,12 @@ export default function TransportManagement() {
   console.log("NEW SENDUNG:", newSendung);
 
   try {
-    await createSendung(newSendung);
-    alert("Sendung erfolgreich erstellt");
-    navigate("/reports/dashboard");
+  await createSendung(newSendung);
+
+  sessionStorage.setItem("toastMessage", "Sendung erfolgreich erstellt");
+
+  navigate("/reports/dashboard");
+
   } catch (error) {
     console.error("CREATE ERROR:", error);
     alert("Fehler beim Erstellen der Sendung: " + error.message);
@@ -187,6 +226,12 @@ export default function TransportManagement() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white p-8 md:p-10">
+      {successMessage && (
+        <div className="fixed right-6 top-6 z-50 rounded-xl border border-green-500/30 bg-green-500/20 px-5 py-3 text-green-200 shadow-lg">
+          {successMessage}
+        </div>
+      )}
+
       <button
         type="button"
         onClick={() => navigate("/")}
@@ -210,41 +255,49 @@ export default function TransportManagement() {
           <div>
             <label className="mb-2 block text-sm text-slate-300">Strasse</label>
             <input
+              id="startStrasse"
               type="text"
               value={formData.startStrasse}
               onChange={(e) => handleChange("startStrasse", e.target.value)}
               className={inputClass("startStrasse")}
             />
+            <ErrorMessage field="startStrasse"/>
           </div>
 
           <div>
             <label className="mb-2 block text-sm text-slate-300">Hausnummer</label>
             <input
+              id="startHausnummer"
               type="text"
               value={formData.startHausnummer}
               onChange={(e) => handleChange("startHausnummer", e.target.value)}
               className={inputClass("startHausnummer")}
             />
+            <ErrorMessage field="startHausnummer"/>
           </div>
 
           <div>
             <label className="mb-2 block text-sm text-slate-300">PLZ</label>
             <input
+              id="startPlz"
               type="text"
               value={formData.startPlz}
               onChange={(e) => handleChange("startPlz", e.target.value)}
               className={inputClass("startPlz")}
             />
+            <ErrorMessage field="startPlz"/>
           </div>
 
           <div>
             <label className="mb-2 block text-sm text-slate-300">Ort</label>
             <input
+              id="startOrt"
               type="text"
               value={formData.startOrt}
               onChange={(e) => handleChange("startOrt", e.target.value)}
               className={inputClass("startOrt")}
             />
+            <ErrorMessage field="startOrt"/>
           </div>
 
           <div className="md:col-span-2">
@@ -269,41 +322,49 @@ export default function TransportManagement() {
           <div>
             <label className="mb-2 block text-sm text-slate-300">Strasse</label>
             <input
+              id="zielStrasse"
               type="text"
               value={formData.zielStrasse}
               onChange={(e) => handleChange("zielStrasse", e.target.value)}
               className={inputClass("zielStrasse")}
             />
+            <ErrorMessage field="zielStrasse"/>
           </div>
 
           <div>
             <label className="mb-2 block text-sm text-slate-300">Hausnummer</label>
             <input
+              id="zielHausnummer"
               type="text"
               value={formData.zielHausnummer}
               onChange={(e) => handleChange("zielHausnummer", e.target.value)}
               className={inputClass("zielHausnummer")}
             />
+            <ErrorMessage field="zielHausnummer"/>
           </div>
 
           <div>
             <label className="mb-2 block text-sm text-slate-300">PLZ</label>
             <input
+              id="zielPlz"
               type="text"
               value={formData.zielPlz}
               onChange={(e) => handleChange("zielPlz", e.target.value)}
               className={inputClass("zielPlz")}
             />
+            <ErrorMessage field="zielPlz" />
           </div>
 
           <div>
             <label className="mb-2 block text-sm text-slate-300">Ort</label>
             <input
+              id="zielOrt"
               type="text"
               value={formData.zielOrt}
               onChange={(e) => handleChange("zielOrt", e.target.value)}
               className={inputClass("zielOrt")}
             />
+            <ErrorMessage field="zielOrt"/>
           </div>
 
           <div className="md:col-span-2">
@@ -354,13 +415,14 @@ export default function TransportManagement() {
 
             <div className="relative">
               <input
+                id="lieferdatum"
                 type="text"
                 placeholder="TT.MM.JJJJ"
                 value={formData.lieferdatum}
                 onChange={(e) => handleChange("lieferdatum", e.target.value)}
                 className={inputClass("lieferdatum")}
               />
-
+              
               <span className="material-symbols-outlined pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[22px] text-slate-400">
                 calendar_month
               </span>
@@ -373,6 +435,7 @@ export default function TransportManagement() {
               }
               />
             </div>
+            <ErrorMessage field="lieferdatum"/>
           </div>
 
           <div>
@@ -389,11 +452,13 @@ export default function TransportManagement() {
           <div>
             <label className="mb-2 block text-sm text-slate-300">Gewicht (kg)</label>
             <input
+              id="gewichtKg"
               type="number"
               value={formData.gewichtKg}
               onChange={(e) => handleChange("gewichtKg", e.target.value)}
               className={inputClass("gewichtKg")}
             />
+            <ErrorMessage field="gewichtKg" />
           </div>
 
           <div>
@@ -423,7 +488,7 @@ export default function TransportManagement() {
           <div className="md:col-span-2 flex justify-end gap-3 pt-4">
             <button
               type="button"
-              onClick={() => navigate("/reports/dashboard")}
+              onClick={() => navigate("/")}
               className="rounded-lg bg-slate-700 px-5 py-3 hover:bg-slate-600 transition"
             >
               Abbrechen

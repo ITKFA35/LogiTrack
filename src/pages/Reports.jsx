@@ -64,6 +64,16 @@ export default function Reports() {
             >
               1.1 Detaillierte Berichte
             </button>
+
+            <button
+              onClick={() => {
+                navigate("/fahrzeuge");
+                setDropdownOpen(false);
+              }}
+              className="block w-full px-4 py-3 text-left text-sm text-white hover:bg-slate-800 transition"
+            >
+              1.2 Fahrzeugübersicht
+            </button>
           </div>
         )}
       </div>
@@ -79,9 +89,15 @@ export default function Reports() {
         </button>
 
 
-        <div className="rounded-2xl bg-slate-800 p-6 shadow-lg">
-          <p className="text-gray-400">Anzahl Fahrzeuge</p>
-          <h2 className="mt-2 text-3xl font-bold">{fahrzeuge.length}</h2>
+        <div
+          onClick={() => navigate("/fahrzeuge")}
+          className="cursor-pointer rounded-2xl border border-slate-800 bg-slate-800 p-6 shadow-lg transition hover:bg-slate-700/60"
+        >
+          <p className="text-slate-400">Anzahl Fahrzeuge</p>
+
+          <p className="mt-3 text-4xl font-bold text-white">
+            {fahrzeuge.length}
+          </p>
         </div>
       </div>
     </div>

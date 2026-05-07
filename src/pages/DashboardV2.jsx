@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect} from "react";
 import { getSendungen, deleteSendung, updateSendung } from "../services/api";
 import deleteIcon from "../assets/delete.svg";
 
@@ -8,6 +8,7 @@ export default function DashboardV2() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sendungen, setSendungen] = useState([]);
   const [selectedSendung, setSelectedSendung] = useState(null);
+  const [toastMessage, setToastMessage] = useState("");
 
   const [editForm, setEditForm] = useState({
     startStrasse: "",
@@ -27,6 +28,16 @@ export default function DashboardV2() {
   });
 
   useEffect(() => {
+  const message = sessionStorage.getItem("toastMessage");
+
+  if (message) {
+    setToastMessage(message);
+
+    setTimeout(() => {
+      setToastMessage("");
+      sessionStorage.removeItem("toastMessage");
+    }, 3000);
+  }
     getSendungen().then((data) => {
       setSendungen(data);
     });
@@ -115,13 +126,17 @@ export default function DashboardV2() {
   };
 
   const handleDelete = async (id) => {
-    const confirmed = window.confirm("Bist du sicher, dass du diese Sendung löschen möchtest?");
+
+    const confirmed = window.confirm(
+      "Bist du sicher, dass du diese Sendung löschen möchtest?"
+    );
     if (!confirmed) return;
 
     try {
       await deleteSendung(id);
-
-      setSendungen((prev) => prev.filter((sendung) => sendung.id !== id));
+      setSendungen((prev) =>
+        prev.filter((sendung) => sendung.id !== id)
+      );
 
       if (selectedSendung && selectedSendung.id === id) {
         setSelectedSendung(null);
@@ -133,6 +148,8 @@ export default function DashboardV2() {
   };
 
   const handleSave = async () => {
+    const currentId = selectedSendung.id;
+
     const updatedSendung = {
       ...selectedSendung,
       ...editForm,
@@ -141,15 +158,26 @@ export default function DashboardV2() {
     };
 
     try {
-      const savedSendung = await updateSendung(selectedSendung.id, updatedSendung);
+      const savedSendung = await updateSendung(currentId, updatedSendung);
 
       setSendungen((prev) =>
         prev.map((sendung) =>
-          sendung.id === selectedSendung.id ? savedSendung : sendung
+          sendung.id === currentId ? savedSendung : sendung
         )
       );
 
-      closeEditModal();
+      setSelectedSendung(null);
+
+      setTimeout(() => {
+        const row = document.getElementById(`sendung-row-${currentId}`);
+
+        if (row) {
+          row.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }
+      }, 100);
     } catch (error) {
       console.error("UPDATE ERROR:", error);
       alert("Fehler beim Speichern der Sendung");
@@ -167,6 +195,11 @@ export default function DashboardV2() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white p-8 md:p-10">
+      {toastMessage && (
+        <div className="fixed right-6 top-6 z-50 rounded-xl border border-green-500/30 bg-green-500/20 px-5 py-3 text-green-200 shadow-lg">
+          {toastMessage}
+        </div>
+      )}
       <button
         type="button"
         onClick={() => navigate("/reports")}
@@ -215,6 +248,16 @@ export default function DashboardV2() {
             </button>
 
             <button
+              onClick={() => {
+                navigate("/fahrzeuge");
+                setDropdownOpen(false);
+              }}
+              className="block w-full px-4 py-3 text-left text-sm text-white hover:bg-slate-800 transition"
+            >
+              1.2 Fahrzeugübersicht
+            </button>
+
+            <button
               type="button"
               onClick={() => {
                 navigate("/transport");
@@ -258,6 +301,7 @@ export default function DashboardV2() {
           <tbody>
             {sendungen.map((sendung) => (
               <tr
+                id={`sendung-row-${sendung.id}`}
                 key={sendung.id}
                 onClick={() => openEditModal(sendung)}
                 className="cursor-pointer border-t border-slate-700 hover:bg-slate-700/40 transition"
