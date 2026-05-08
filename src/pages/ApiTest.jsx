@@ -1,5 +1,6 @@
 import {
   getSendungen,
+  getSendungById,
   createSendung,
   updateSendung,
   deleteSendung,
@@ -55,24 +56,24 @@ export default function ApiTest() {
     }
   }
 
-  async function handlePut() {
-    try {
-      const bestehendeSendung = await fetch("http://localhost:3001/sendungen/1001").then((r) => r.json());
+async function handlePut() {
+  try {
+    const bestehendeSendung = await getSendungById(1001);
 
-      const updated = {
-        ...bestehendeSendung,
-        status: "geliefert",
-        bemerkungen: "Per PUT aktualisiert"
-      };
+    const updated = {
+      ...bestehendeSendung,
+      status: "geliefert",
+      bemerkungen: "Per PUT aktualisiert"
+    };
 
-      const result = await updateSendung(1001, updated);
-      console.log("PUT /sendungen/1001", result);
-      alert("PUT erfolgreich.");
-    } catch (error) {
-      console.error(error);
-      alert(error.message);
-    }
+    const result = await updateSendung(1001, updated);
+    console.log("PUT /api/sendungen/1001", result);
+    alert("PUT erfolgreich.");
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
   }
+}
 
   async function handleDelete() {
     try {

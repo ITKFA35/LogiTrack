@@ -23,6 +23,8 @@ export default function DashboardV2() {
     status: "",
     prioritaet: "",
     lieferungTyp: "",
+    gewichtKg: "",
+    lieferdatum: "",
   });
 
   useEffect(() => {
@@ -72,6 +74,15 @@ export default function DashboardV2() {
     return "";
   };
 
+  const formatDateToGerman = (dateValue) => {
+    if (!dateValue) return "";
+
+    if (dateValue.includes(".")) return dateValue;
+
+    const [year, month, day] = dateValue.split("-");
+    return `${day}.${month}.${year}`;
+  };
+
   const openEditModal = (sendung) => {
     setSelectedSendung(sendung);
     setEditForm({
@@ -88,6 +99,8 @@ export default function DashboardV2() {
       status: sendung.status || "",
       prioritaet: sendung.prioritaet || "",
       lieferungTyp: sendung.lieferungTyp || "",
+      gewichtKg: sendung.gewichtKg || "",
+      lieferdatum: sendung.lieferdatum || "",
     });
   };
 
@@ -126,14 +139,16 @@ export default function DashboardV2() {
     const updatedSendung = {
       ...selectedSendung,
       ...editForm,
+      gewichtKg: Number(editForm.gewichtKg),
+      lieferdatum: formatDateToApi(editForm.lieferdatum),
     };
 
     try {
-      const savedSendung = await updateSendung(selectedSendung.id, updatedSendung);
+      await updateSendung(selectedSendung.id, updatedSendung);
 
       setSendungen((prev) =>
         prev.map((sendung) =>
-          sendung.id === selectedSendung.id ? savedSendung : sendung
+          sendung.id === selectedSendung.id ? updatedSendung : sendung
         )
       );
 
@@ -144,10 +159,19 @@ export default function DashboardV2() {
     }
   };
 
+  const formatDateToApi = (dateValue) => {
+    if (!dateValue) return "";
+
+    if (dateValue.includes("-")) return dateValue;
+
+    const [day, month, year] = dateValue.split(".");
+    return `${year}-${month}-${day}`;
+  };
+
   return (
     <div className="min-h-screen bg-slate-900 text-white p-8 md:p-10">
       <button
-        onClick={() => navigate("/reports")}
+        onClick={() => navigate("/")}
         className="mb-8 rounded-lg bg-slate-700 px-4 py-2 hover:bg-slate-600 transition"
       >
         ← Zur Startseite
@@ -216,6 +240,15 @@ export default function DashboardV2() {
               <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">
                 Zieladresse
               </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">
+                Lieferdatum
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">
+                Liefertyp
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">
+                Gewicht
+              </th>
               <th className="px-6 py-4 text-right text-sm font-semibold text-slate-200"></th>
             </tr>
           </thead>
@@ -245,6 +278,18 @@ export default function DashboardV2() {
                   {formatAdresse("ziel", sendung)}
                 </td>
 
+                <td className="px-6 py-4 text-sm text-slate-300">
+                  {formatDateToGerman(sendung.lieferdatum)}
+                </td>
+
+                <td className="px-6 py-4 text-sm text-slate-300">
+                  {sendung.lieferungTyp}
+                </td>
+
+                <td className="px-6 py-4 text-sm text-slate-300">
+                  {sendung.gewichtKg} kg
+                </td>
+
                 <td className="px-6 py-4 text-right">
                   <button
                     onClick={(e) => {
@@ -269,14 +314,14 @@ export default function DashboardV2() {
       {selectedSendung && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6">
           <div className="flex h-[85vh] w-full max-w-4xl flex-col rounded-2xl bg-slate-800 shadow-2xl">
-            
+
             {/* HEADER */}
             <div className="border-b border-slate-700 px-6 py-4">
               <h2 className="text-2xl font-bold">Sendung bearbeiten</h2>
             </div>
 
             {/* SCROLL CONTENT */}
-            <div className="flex-1 overflow-y-auto overscroll-contain px-6 py-4"> 
+            <div className="flex-1 overflow-y-auto overscroll-contain px-6 py-4">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-sm text-slate-300">
@@ -440,6 +485,46 @@ export default function DashboardV2() {
                   </select>
                 </div>
 
+                <div>
+                  <label className="mb-2 block text-sm text-slate-300">
+                    Gewicht (kg)
+                  </label>
+                  <input
+                    type="number"
+                    value={editForm.gewichtKg}
+                    onChange={(e) => handleChange("gewichtKg", e.target.value)}
+                    className="w-full rounded-lg border border-slate-600 bg-slate-900 px-4 py-3 text-white outline-none focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm text-slate-300">
+                    Lieferdatum
+                  </label>
+
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="TT.MM.JJJJ"
+                      value={formatDateToGerman(editForm.lieferdatum)}
+                      onChange={(e) => handleChange("lieferdatum", e.target.value)}
+                      className="w-full rounded-lg border border-slate-600 bg-slate-900 px-4 py-3 pr-12 text-white outline-none focus:border-blue-500"
+                    />
+
+                    <span className="material-symbols-outlined pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[22px] text-slate-400">
+                      calendar_month
+                    </span>
+
+                    <input
+                      type="date"
+                      className="absolute right-3 top-1/2 h-8 w-8 -translate-y-1/2 cursor-pointer opacity-0"
+                      onChange={(e) =>
+                        handleChange("lieferdatum", formatDateToGerman(e.target.value))
+                      }
+                    />
+                  </div>
+                </div>
+
                 <div className="md:col-span-2">
                   <label className="mb-2 block text-sm text-slate-300">
                     Lieferung Typ
@@ -447,10 +532,8 @@ export default function DashboardV2() {
                   <select
                     value={editForm.lieferungTyp}
                     onChange={(e) => handleChange("lieferungTyp", e.target.value)}
-                    className="w-full rounded-lg border border-slate-600 bg-slate-900 px-4 py-3 text-white outline-none focus:border-blue-500">
-                    <option value="Paket">Paket</option>    
-                    <option value="Palette">Palette</option>    
-                  </select>
+                    className="w-full rounded-lg border border-slate-600 bg-slate-900 px-4 py-3 text-white outline-none focus:border-blue-500"
+                  />
                 </div>
               </div>
             </div>
@@ -461,11 +544,11 @@ export default function DashboardV2() {
                 onClick={() => handleDelete(selectedSendung.id)}
                 className="flex items-center gap-2 rounded-lg bg-red-500/20 px-4 py-2 text-red-400 hover:bg-red-500/30 transition"
               >
-              <img
-                src={deleteIcon}
-                alt="Löschen"
-                className="h-5 w-5"
-              />
+                <img
+                  src={deleteIcon}
+                  alt="Löschen"
+                  className="h-5 w-5"
+                />
                 Löschen
               </button>
 
@@ -477,17 +560,18 @@ export default function DashboardV2() {
                   Abbrechen
                 </button>
 
-                <button className="rounded-lg bg-blue-600 px-5 py-3 hover:bg-blue-700 transition"
-                 type="button"
-                 onClick={handleSave}
-                 className="rounded-lg bg-blue-600 px-5 py-3 hover:bg-blue-700 transition">
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  className="rounded-lg bg-blue-600 px-5 py-3 hover:bg-blue-700 transition"
+                >
                   Speichern
                 </button>
               </div>
             </div>
           </div>
         </div>
-         )}
-   </div>
+      )}
+    </div>
   );
 }

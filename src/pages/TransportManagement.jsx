@@ -55,6 +55,8 @@ export default function TransportManagement() {
   const formatDateToApi = (dateValue) => {
     if (!dateValue) return "";
 
+    if (dateValue.includes("-")) return dateValue;
+
     const [day, month, year] = dateValue.split(".");
     return `${year}-${month}-${day}`;
   };
@@ -162,6 +164,7 @@ export default function TransportManagement() {
 
     const newSendung = {
       ...formData,
+      lieferdatum: formatDateToApi(formData.lieferdatum),
       gewichtKg: formData.gewichtKg === "" ? 0 : Number(formData.gewichtKg),
       kundenId: Number(formData.kundenId),
       fahrerId: Number(formData.fahrerId),
@@ -365,7 +368,6 @@ export default function TransportManagement() {
 
           <div>
             <label className="mb-2 block text-sm text-slate-300">Lieferdatum</label>
-
             <div className="relative">
               <input
                 type="text"
