@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getSendungen, deleteSendung, updateSendung } from "../services/api";
+import deleteIcon from "../assets/delete.svg";
 
 export default function DashboardV2() {
   const navigate = useNavigate();
@@ -22,6 +23,8 @@ export default function DashboardV2() {
     status: "",
     prioritaet: "",
     lieferungTyp: "",
+    gewichtKg: "",
+    lieferdatum: "",
   });
 
   useEffect(() => {
@@ -73,6 +76,15 @@ export default function DashboardV2() {
     return "";
   };
 
+  const formatDateToGerman = (dateValue) => {
+    if (!dateValue) return "";
+
+    if (dateValue.includes(".")) return dateValue;
+
+    const [year, month, day] = dateValue.split("-");
+    return `${day}.${month}.${year}`;
+  };
+
   const openEditModal = (sendung) => {
     setSelectedSendung(sendung);
     setEditForm({
@@ -89,6 +101,8 @@ export default function DashboardV2() {
       status: sendung.status || "",
       prioritaet: sendung.prioritaet || "",
       lieferungTyp: sendung.lieferungTyp || "",
+      gewichtKg: sendung.gewichtKg || "",
+      lieferdatum: sendung.lieferdatum || "",
     });
   };
 
@@ -127,28 +141,39 @@ export default function DashboardV2() {
     const updatedSendung = {
       ...selectedSendung,
       ...editForm,
+      gewichtKg: Number(editForm.gewichtKg),
+      lieferdatum: formatDateToApi(editForm.lieferdatum),
     };
 
     try {
-      const savedSendung = await updateSendung(selectedSendung.id, updatedSendung);
+  await updateSendung(selectedSendung.id, updatedSendung);
 
-      setSendungen((prev) =>
-        prev.map((sendung) =>
-          sendung.id === selectedSendung.id ? savedSendung : sendung
-        )
-      );
+  setSendungen((prev) =>
+    prev.map((sendung) =>
+      sendung.id === selectedSendung.id ? updatedSendung : sendung
+    )
+  );
 
-      setSelectedSendung(null);
-    } catch (error) {
-      console.error("UPDATE ERROR:", error);
-      alert("Fehler beim Speichern der Sendung");
-    }
+  setSelectedSendung(null);
+} catch (error) {
+  console.error("UPDATE ERROR:", error);
+  alert("Fehler beim Speichern der Sendung");
+}
+  };
+
+  const formatDateToApi = (dateValue) => {
+    if (!dateValue) return "";
+
+    if (dateValue.includes("-")) return dateValue;
+
+    const [day, month, year] = dateValue.split(".");
+    return `${year}-${month}-${day}`;
   };
 
   return (
     <div className="min-h-screen bg-slate-900 text-white p-8 md:p-10">
       <button
-        onClick={() => navigate("/reports")}
+        onClick={() => navigate("/")}
         className="mb-8 rounded-lg bg-slate-700 px-4 py-2 hover:bg-slate-600 transition"
       >
         ← Zur Startseite
@@ -217,6 +242,15 @@ export default function DashboardV2() {
               <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">
                 Zieladresse
               </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">
+                Lieferdatum
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">
+                Liefertyp
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">
+                Gewicht
+              </th>
               <th className="px-6 py-4 text-right text-sm font-semibold text-slate-200"></th>
             </tr>
           </thead>
@@ -246,6 +280,18 @@ export default function DashboardV2() {
                   {formatAdresse("ziel", sendung)}
                 </td>
 
+                <td className="px-6 py-4 text-sm text-slate-300">
+                  {formatDateToGerman(sendung.lieferdatum)}
+                </td>
+
+                <td className="px-6 py-4 text-sm text-slate-300">
+                  {sendung.lieferungTyp}
+                </td>
+
+                <td className="px-6 py-4 text-sm text-slate-300">
+                  {sendung.gewichtKg} kg
+                </td>
+
                 <td className="px-6 py-4 text-right">
                   <button
                     onClick={(e) => {
@@ -254,9 +300,11 @@ export default function DashboardV2() {
                     }}
                     className="rounded p-2 text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
                   >
-                    <span className="material-symbols-outlined text-[20px]">
-                      delete
-                    </span>
+                    <img
+                      src={deleteIcon}
+                      alt="Löschen"
+                      className="h-5 w-5"
+                    />
                   </button>
                 </td>
               </tr>
@@ -430,6 +478,46 @@ export default function DashboardV2() {
                   </select>
                 </div>
 
+                <div>
+                  <label className="mb-2 block text-sm text-slate-300">
+                    Gewicht (kg)
+                  </label>
+                  <input
+                    type="number"
+                    value={editForm.gewichtKg}
+                    onChange={(e) => handleChange("gewichtKg", e.target.value)}
+                    className="w-full rounded-lg border border-slate-600 bg-slate-900 px-4 py-3 text-white outline-none focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm text-slate-300">
+                    Lieferdatum
+                  </label>
+
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="TT.MM.JJJJ"
+                      value={formatDateToGerman(editForm.lieferdatum)}
+                      onChange={(e) => handleChange("lieferdatum", e.target.value)}
+                      className="w-full rounded-lg border border-slate-600 bg-slate-900 px-4 py-3 pr-12 text-white outline-none focus:border-blue-500"
+                    />
+
+                    <span className="material-symbols-outlined pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[22px] text-slate-400">
+                      calendar_month
+                    </span>
+
+                    <input
+                      type="date"
+                      className="absolute right-3 top-1/2 h-8 w-8 -translate-y-1/2 cursor-pointer opacity-0"
+                      onChange={(e) =>
+                        handleChange("lieferdatum", formatDateToGerman(e.target.value))
+                      }
+                    />
+                  </div>
+                </div>
+
                 <div className="md:col-span-2">
                   <label className="mb-2 block text-sm text-slate-300">
                     Lieferung Typ
@@ -450,9 +538,11 @@ export default function DashboardV2() {
                 onClick={() => handleDelete(selectedSendung.id)}
                 className="flex items-center gap-2 rounded-lg bg-red-500/20 px-4 py-2 text-red-400 hover:bg-red-500/30 transition"
               >
-                <span className="material-symbols-outlined text-[18px]">
-                  delete
-                </span>
+                <img
+                  src={deleteIcon}
+                  alt="Löschen"
+                  className="h-5 w-5"
+                />
                 Löschen
               </button>
 
@@ -464,12 +554,13 @@ export default function DashboardV2() {
                   Abbrechen
                 </button>
 
-                <button className="rounded-lg bg-blue-600 px-5 py-3 hover:bg-blue-700 transition"
-                 type="button"
-                 onClick={handleSave}
-                 className="rounded-lg bg-blue-600 px-5 py-3 hover:bg-blue-700 transition">
-                  Speichern
-                </button>
+                <button
+  type="button"
+  onClick={handleSave}
+  className="rounded-lg bg-blue-600 px-5 py-3 hover:bg-blue-700 transition"
+>
+  Speichern
+</button>
               </div>
             </div>
           </div>

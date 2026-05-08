@@ -1,6 +1,6 @@
 import { validateSendung } from "./validation";
 import { validateStatusChange } from "./validation";
-const BASE_URL = "http://localhost:3001";
+const BASE_URL = "http://logitracknas.taildc027e.ts.net:3001/api";
 
 function addParam(params, key, value) {
   if (value && value.trim()) {
