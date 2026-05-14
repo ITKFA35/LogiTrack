@@ -6,6 +6,7 @@ COPY package*.json ./
 RUN npm install --omit=dev
 
 COPY server ./server
+COPY src ./src
 
 EXPOSE 3001
 

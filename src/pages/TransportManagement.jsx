@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useRef  } from "react";
+import { useState, useRef } from "react";
 import { createSendung } from "../services/api";
 
 export default function TransportManagement() {
@@ -25,7 +25,8 @@ export default function TransportManagement() {
     zielLand: "CH",
 
     erfassungsdatum: new Date().toISOString().split("T")[0],
-    lieferdatum: "",
+    lieferdatumDate: "",
+    lieferdatumTime: "",
     status: "offen",
     prioritaet: "niedrig",
     lieferungTyp: "Paket",
@@ -42,24 +43,42 @@ export default function TransportManagement() {
   };
 
   const inputClass = (field) =>
-  `w-full rounded-lg border bg-slate-900 px-4 py-3 text-white outline-none focus:border-blue-500 ${
-    errors[field] ? "border-red-500" : "border-slate-600"
-  }`;
+    `w-full rounded-lg border bg-slate-900 px-4 py-3 text-white outline-none focus:border-blue-500 ${errors[field] ? "border-red-500" : "border-slate-600"
+    }`;
 
   const formatDateToGerman = (dateValue) => {
-  if (!dateValue) return "";
+    if (!dateValue) return "";
 
-  const [year, month, day] = dateValue.split("-");
-  return `${day}.${month}.${year}`;
+    const [datePart, timePart] = dateValue.split("T");
+
+    const [year, month, day] = datePart.split("-");
+
+    const time = timePart ? timePart.slice(0, 5) : "00:00";
+
+    return `${day}.${month}.${year}, ${time}`;
+  };
+
+  const formatDateTimeToGerman = (dateValue) => {
+    if (!dateValue) return "";
+
+    const [datePart, timePart] = dateValue.split("T");
+    const [year, month, day] = datePart.split("-");
+
+    return `${day}.${month}.${year} ${timePart || "00:00"}`;
   };
 
   const formatDateToApi = (dateValue) => {
     if (!dateValue) return "";
 
-    if (dateValue.includes("-")) return dateValue;
+    if (dateValue.includes("T")) return dateValue;
 
-    const [day, month, year] = dateValue.split(".");
-    return `${year}-${month}-${day}`;
+    const [datePart, timePart] = dateValue.split(" ");
+
+    const [day, month, year] = datePart.split(".");
+
+    const time = timePart || "00:00";
+
+    return `${year}-${month}-${day}T${time}:00`;
   };
 
   const validate = () => {
@@ -133,7 +152,7 @@ export default function TransportManagement() {
       addError("zielOrt", "Zieladresse: Der Ort enthält ungültige Zeichen.");
     }
 
-    if (!formData.lieferdatum.trim()) {
+    if (!formData.lieferdatumDate || !formData.lieferdatumTime) {
       addError("lieferdatum", "Bitte wähle ein gültiges Lieferdatum.");
     }
 
@@ -159,59 +178,64 @@ export default function TransportManagement() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!validate()) return;
+    if (!validate()) return;
 
-  const newSendung = {
-    ...formData,
-    lieferdatum: formatDateToApi(formData.lieferdatum),
-    gewichtKg: formData.gewichtKg === "" ? 0 : Number(formData.gewichtKg),
-    kundenId: Number(formData.kundenId),
-    fahrerId: Number(formData.fahrerId),
-    fahrzeugId: Number(formData.fahrzeugId),
-    benachrichtigung: Boolean(formData.benachrichtigung),
+    const { lieferdatumDate, lieferdatumTime, ...restFormData } = formData;
+
+    const newSendung = {
+      ...restFormData,
+      lieferdatum: `${lieferdatumDate}T${lieferdatumTime}:00`,
+      gewichtKg: formData.gewichtKg === "" ? 0 : Number(formData.gewichtKg),
+      kundenId: Number(formData.kundenId),
+      fahrerId: Number(formData.fahrerId),
+      fahrzeugId: Number(formData.fahrzeugId),
+      benachrichtigung: Boolean(formData.benachrichtigung),
+    };
+
+
+    console.log("LIEFERDATUM DATE:", formData.lieferdatumDate);
+    console.log("LIEFERDATUM TIME:", formData.lieferdatumTime);
+    console.log("NEW SENDUNG:", newSendung);
+
+    try {
+      await createSendung(newSendung);
+      alert("Sendung erfolgreich erstellt");
+      navigate("/reports/dashboard");
+    } catch (error) {
+      console.error("CREATE ERROR:", error);
+      alert("Fehler beim Erstellen der Sendung: " + error.message);
+    }
   };
-
-  console.log("NEW SENDUNG:", newSendung);
-
-  try {
-    await createSendung(newSendung);
-    alert("Sendung erfolgreich erstellt");
-    navigate("/reports/dashboard");
-  } catch (error) {
-    console.error("CREATE ERROR:", error);
-    alert("Fehler beim Erstellen der Sendung: " + error.message);
-  }
-};
 
   return (
     <div className="min-h-screen bg-slate-900 text-white p-8 md:p-10">
       <div className="mb-8 flex flex-wrap gap-3">
-  <button
-    type="button"
-    onClick={() => navigate("/")}
-    className="rounded-lg bg-slate-700 px-4 py-2 hover:bg-slate-600 transition"
-  >
-    ← Zur Startseite
-  </button>
+        <button
+          type="button"
+          onClick={() => navigate("/")}
+          className="rounded-lg bg-slate-700 px-4 py-2 hover:bg-slate-600 transition"
+        >
+          ← Zur Startseite
+        </button>
 
-  <button
-    type="button"
-    onClick={() => navigate("/reports/dashboard")}
-    className="rounded-lg bg-blue-700 px-4 py-2 hover:bg-blue-600 transition"
-  >
-    Sendungen
-  </button>
+        <button
+          type="button"
+          onClick={() => navigate("/reports/dashboard")}
+          className="rounded-lg bg-blue-700 px-4 py-2 hover:bg-blue-600 transition"
+        >
+          Sendungen
+        </button>
 
-  <button
-    type="button"
-    onClick={() => navigate("/reports")}
-    className="rounded-lg bg-indigo-700 px-4 py-2 hover:bg-indigo-600 transition"
-  >
-    Reports
-  </button>
-</div>
+        <button
+          type="button"
+          onClick={() => navigate("/reports")}
+          className="rounded-lg bg-indigo-700 px-4 py-2 hover:bg-indigo-600 transition"
+        >
+          Reports
+        </button>
+      </div>
 
       <div className="mb-8">
         <p className="text-sm text-slate-400">LogiTrack</p>
@@ -348,9 +372,6 @@ export default function TransportManagement() {
             >
               <option value="offen">offen</option>
               <option value="zugewiesen">zugewiesen</option>
-              <option value="unterwegs">unterwegs</option>
-              <option value="geliefert">geliefert</option>
-              <option value="wartet">wartet</option>
             </select>
           </div>
 
@@ -369,37 +390,32 @@ export default function TransportManagement() {
 
           <div>
             <label className="mb-2 block text-sm text-slate-300">Lieferdatum</label>
-            <div className="relative">
+
+            <div className="grid grid-cols-2 gap-3">
               <input
-                type="text"
-                placeholder="TT.MM.JJJJ"
-                value={formData.lieferdatum}
-                onChange={(e) => handleChange("lieferdatum", e.target.value)}
+                type="date"
+                value={formData.lieferdatumDate || ""}
+                onChange={(e) => handleChange("lieferdatumDate", e.target.value)}
                 className={inputClass("lieferdatum")}
               />
 
-              <span className="material-symbols-outlined pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[22px] text-slate-400">
-                calendar_month
-              </span>
-
               <input
-                type="date"
-                className="absolute right-3 top-1/2 h-8 w-8 -translate-y-1/2 cursor-pointer opacity-0"
-                onChange={(e) =>
-                handleChange("lieferdatum", formatDateToGerman(e.target.value))
-              }
+                type="time"
+                value={formData.lieferdatumTime || ""}
+                onChange={(e) => handleChange("lieferdatumTime", e.target.value)}
+                className={inputClass("lieferdatum")}
               />
             </div>
           </div>
 
           <div>
             <label className="mb-2 block text-sm text-slate-300">Lieferung Typ</label>
-            <select 
+            <select
               value={formData.lieferungTyp}
               onChange={(e) => handleChange("lieferungTyp", e.target.value)}
               className={inputClass("lieferungTyp")}>
-             <option value="Paket">Paket</option>
-             <option value="Palette">Palette</option>                
+              <option value="Paket">Paket</option>
+              <option value="Palette">Palette</option>
             </select>
           </div>
 

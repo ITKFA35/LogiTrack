@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import pool from "./db.js";
+import { validateSendung, validateStatusChange } from "../src/services/validation.js";
 
 const app = express();
 app.use(cors());
@@ -49,6 +50,19 @@ app.get("/api/sendungen", async (req, res) => {
 app.post("/api/sendungen", async (req, res) => {
   try {
     const data = req.body;
+
+    data.status = data.status || "offen";
+    const validation = validateSendung(data, {
+      requireId: false,
+      isCreate: true,
+    });
+
+    if (!validation.valid) {
+      return res.status(400).json({
+        fehler: "Validierungsfehler",
+        details: validation.errors
+      });
+    }
 
     const sql = `
       INSERT INTO sendungen (
@@ -120,7 +134,19 @@ app.put("/api/sendungen/:id", async (req, res) => {
     const { id } = req.params;
     const data = req.body;
 
-    await pool.query(
+    const validation = validateSendung(
+      { ...data, id },
+      { requireId: true }
+    );
+
+    if (!validation.valid) {
+      return res.status(400).json({
+        fehler: "Validierungsfehler",
+        details: validation.errors
+      });
+    }
+
+    const [result] = await pool.query(
       `UPDATE sendungen SET
       kundenId=?,
       fahrerId=?,
@@ -170,6 +196,12 @@ app.put("/api/sendungen/:id", async (req, res) => {
       ]
     );
 
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        fehler: "Nicht gefunden"
+      });
+    }
+
     res.json({ message: "Aktualisiert" });
   } catch (error) {
     res.status(500).json({ fehler: error.message });
@@ -180,10 +212,14 @@ app.delete("/api/sendungen/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    await pool.query(
+    const [result] = await pool.query(
       "DELETE FROM sendungen WHERE id = ?",
       [id]
     );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ fehler: "Nicht gefunden" });
+    }
 
     res.json({ message: "Geloescht" });
   } catch (error) {
@@ -195,6 +231,26 @@ app.patch("/api/sendungen/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
+
+    const [rows] = await pool.query(
+      "SELECT * FROM sendungen WHERE id = ?",
+      [id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ fehler: "Nicht gefunden" });
+    }
+
+    const oldStatus = rows[0].status;
+
+    const validation = validateStatusChange(oldStatus, status);
+
+    if (!validation.valid) {
+      return res.status(400).json({
+        fehler: "Ungueltiger Statuswechsel",
+        details: validation.error
+      });
+    }
 
     await pool.query(
       "UPDATE sendungen SET status=? WHERE id=?",

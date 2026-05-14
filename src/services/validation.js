@@ -31,8 +31,10 @@ function isValidPostalCode(plz, land) {
 }
 
 export function validateSendung(sendung, options = {}) {
-  const { requireId = true } = options;
+  const { requireId = true, isCreate = false } = options;
   const errors = [];
+
+
 
   if (requireId && !sendung.id) errors.push("id fehlt");
   if (!sendung.kundenId) errors.push("kundenId fehlt");
@@ -99,6 +101,9 @@ export function validateSendung(sendung, options = {}) {
   if (sendung.zielHausnummer && sendung.zielHausnummer.length > 10) {
     errors.push("zielHausnummer zu lang");
   }
+  if (isCreate && sendung.status !== "offen") {
+    errors.push("Neue Sendungen duerfen nur den Status 'offen' haben");
+  }
 
   return {
     valid: errors.length === 0,
@@ -107,6 +112,13 @@ export function validateSendung(sendung, options = {}) {
 }
 
 export function validateStatusChange(oldStatus, newStatus) {
+  if (!newStatus) {
+    return {
+      valid: false,
+      error: "Status fehlt"
+    };
+  }
+
   if (!STATUS_FLOW[oldStatus]) {
     return {
       valid: false,

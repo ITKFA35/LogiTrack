@@ -79,10 +79,15 @@ export default function DashboardV2() {
   const formatDateToGerman = (dateValue) => {
     if (!dateValue) return "";
 
-    if (dateValue.includes(".")) return dateValue;
+    if (dateValue.includes("T")) {
+      const [datePart, timePart] = dateValue.split("T");
+      const [year, month, day] = datePart.split("-");
+      const time = timePart ? timePart.slice(0, 5) : "00:00";
 
-    const [year, month, day] = dateValue.split("-");
-    return `${day}.${month}.${year}`;
+      return `${day}.${month}.${year}, ${time}`;
+    }
+
+    return dateValue;
   };
 
   const openEditModal = (sendung) => {
@@ -102,7 +107,13 @@ export default function DashboardV2() {
       prioritaet: sendung.prioritaet || "",
       lieferungTyp: sendung.lieferungTyp || "",
       gewichtKg: sendung.gewichtKg || "",
-      lieferdatum: sendung.lieferdatum || "",
+      lieferdatumDate: sendung.lieferdatum
+        ? sendung.lieferdatum.split("T")[0]
+        : "",
+
+      lieferdatumTime: sendung.lieferdatum
+        ? sendung.lieferdatum.split("T")[1]?.slice(0, 5)
+        : "",
     });
   };
 
@@ -142,32 +153,38 @@ export default function DashboardV2() {
       ...selectedSendung,
       ...editForm,
       gewichtKg: Number(editForm.gewichtKg),
-      lieferdatum: formatDateToApi(editForm.lieferdatum),
+      lieferdatum: `${editForm.lieferdatumDate}T${editForm.lieferdatumTime}:00`,
     };
 
     try {
-  await updateSendung(selectedSendung.id, updatedSendung);
+      await updateSendung(selectedSendung.id, updatedSendung);
 
-  setSendungen((prev) =>
-    prev.map((sendung) =>
-      sendung.id === selectedSendung.id ? updatedSendung : sendung
-    )
-  );
+      setSendungen((prev) =>
+        prev.map((sendung) =>
+          sendung.id === selectedSendung.id ? updatedSendung : sendung
+        )
+      );
 
-  setSelectedSendung(null);
-} catch (error) {
-  console.error("UPDATE ERROR:", error);
-  alert("Fehler beim Speichern der Sendung");
-}
+      setSelectedSendung(null);
+    } catch (error) {
+      console.error("UPDATE ERROR:", error);
+      alert("Fehler beim Speichern der Sendung");
+    }
   };
 
   const formatDateToApi = (dateValue) => {
     if (!dateValue) return "";
 
-    if (dateValue.includes("-")) return dateValue;
+    if (dateValue.includes("T")) return dateValue;
 
-    const [day, month, year] = dateValue.split(".");
-    return `${year}-${month}-${day}`;
+    const cleanValue = dateValue.replace(",", "").trim();
+
+    const [datePart, timePart] = cleanValue.split(" ");
+    const [day, month, year] = datePart.split(".");
+
+    const time = timePart || "00:00";
+
+    return `${year}-${month}-${day}T${time}:00`;
   };
 
   return (
@@ -316,14 +333,14 @@ export default function DashboardV2() {
       {selectedSendung && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6">
           <div className="flex h-[85vh] w-full max-w-4xl flex-col rounded-2xl bg-slate-800 shadow-2xl">
-            
+
             {/* HEADER */}
             <div className="border-b border-slate-700 px-6 py-4">
               <h2 className="text-2xl font-bold">Sendung bearbeiten</h2>
             </div>
 
             {/* SCROLL CONTENT */}
-            <div className="flex-1 overflow-y-auto overscroll-contain px-6 py-4"> 
+            <div className="flex-1 overflow-y-auto overscroll-contain px-6 py-4">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-sm text-slate-300">
@@ -490,32 +507,24 @@ export default function DashboardV2() {
                   />
                 </div>
 
-                <div>
-                  <label className="mb-2 block text-sm text-slate-300">
-                    Lieferdatum
-                  </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <input
+                    type="date"
+                    value={editForm.lieferdatumDate || ""}
+                    onChange={(e) =>
+                      handleChange("lieferdatumDate", e.target.value)
+                    }
+                    className="w-full rounded-lg border border-slate-600 bg-slate-900 px-4 py-3 text-white outline-none focus:border-blue-500"
+                  />
 
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="TT.MM.JJJJ"
-                      value={formatDateToGerman(editForm.lieferdatum)}
-                      onChange={(e) => handleChange("lieferdatum", e.target.value)}
-                      className="w-full rounded-lg border border-slate-600 bg-slate-900 px-4 py-3 pr-12 text-white outline-none focus:border-blue-500"
-                    />
-
-                    <span className="material-symbols-outlined pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[22px] text-slate-400">
-                      calendar_month
-                    </span>
-
-                    <input
-                      type="date"
-                      className="absolute right-3 top-1/2 h-8 w-8 -translate-y-1/2 cursor-pointer opacity-0"
-                      onChange={(e) =>
-                        handleChange("lieferdatum", formatDateToGerman(e.target.value))
-                      }
-                    />
-                  </div>
+                  <input
+                    type="time"
+                    value={editForm.lieferdatumTime || ""}
+                    onChange={(e) =>
+                      handleChange("lieferdatumTime", e.target.value)
+                    }
+                    className="w-full rounded-lg border border-slate-600 bg-slate-900 px-4 py-3 text-white outline-none focus:border-blue-500"
+                  />
                 </div>
 
                 <div className="md:col-span-2">
@@ -555,17 +564,17 @@ export default function DashboardV2() {
                 </button>
 
                 <button
-  type="button"
-  onClick={handleSave}
-  className="rounded-lg bg-blue-600 px-5 py-3 hover:bg-blue-700 transition"
->
-  Speichern
-</button>
+                  type="button"
+                  onClick={handleSave}
+                  className="rounded-lg bg-blue-600 px-5 py-3 hover:bg-blue-700 transition"
+                >
+                  Speichern
+                </button>
               </div>
             </div>
           </div>
         </div>
-         )}
-   </div>
+      )}
+    </div>
   );
 }
