@@ -25,13 +25,51 @@
 
 ## Fahrzeug
 - id
-- kontrollschild
-- seriennummer
 - interneNummer
-- fahrzeugTyp
+- kennzeichen
+- vin
+
+- marke
+- modell
+
+- fahrzeugKategorie
+- fahrzeugArt
+
 - status
-- serviceDatum
+
 - mfkDatum
+
+- aktuellerKmStand
+- letzteWartungKm
+- naechsteWartungKm
+
+- nutzlastKg
+- palettenPlaetze
+
+### fahrzeugKategorie
+
+- lkw
+- szm
+- transporter
+- anhaenger
+- auflieger
+
+### fahrzeugArt
+
+- pritsche_plane
+- koffer
+- kuehler
+- tank
+- silo
+- tieflader
+
+### status
+
+- verfügbar
+- in_nutzung
+- wartung
+- reserviert
+- gesperrt
 
 ## Sendung
 - id

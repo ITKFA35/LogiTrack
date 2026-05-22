@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getSendungen, getFahrzeuge } from "../services/api";
+import { getSendungen, getFahrzeuge, getFahrer, getKunden } from "../services/api";
 
 export default function Reports() {
   const navigate = useNavigate();
@@ -8,6 +8,8 @@ export default function Reports() {
 
   const [sendungen, setSendungen] = useState([]);
   const [fahrzeuge, setFahrzeuge] = useState([]);
+  const [fahrer, setFahrer] = useState([]);
+  const [kunden, setKunden] = useState([]);
 
   useEffect(() => {
     getSendungen().then((data) => {
@@ -17,6 +19,15 @@ export default function Reports() {
     getFahrzeuge().then((data) => {
       setFahrzeuge(data);
     });
+
+    getFahrer().then((data) => {
+      setFahrer(data);
+    });
+
+    getKunden().then((data) => {
+      setKunden(data);
+    });
+
   }, []);
 
   return (
@@ -79,10 +90,32 @@ export default function Reports() {
         </button>
 
 
-        <div className="rounded-2xl bg-slate-800 p-6 shadow-lg">
+        <button
+          type="button"
+          onClick={() => navigate("/flotte")}
+          className="rounded-2xl bg-slate-800 p-6 text-left shadow-lg transition hover:bg-slate-700/80"
+        >
           <p className="text-gray-400">Anzahl Fahrzeuge</p>
           <h2 className="mt-2 text-3xl font-bold">{fahrzeuge.length}</h2>
-        </div>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => navigate("/driver")}
+          className="rounded-2xl bg-slate-800 p-6 text-left shadow-lg transition hover:bg-slate-700/80"
+        >
+          <p className="text-gray-400">Anzahl Fahrer</p>
+          <h2 className="mt-2 text-3xl font-bold">{fahrer.length}</h2>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => navigate("/customer")}
+          className="rounded-2xl bg-slate-800 p-6 text-left shadow-lg transition hover:bg-slate-700/80"
+        >
+          <p className="text-gray-400">Anzahl Kunden</p>
+          <h2 className="mt-2 text-3xl font-bold">{kunden.length}</h2>
+        </button>
       </div>
     </div>
   );

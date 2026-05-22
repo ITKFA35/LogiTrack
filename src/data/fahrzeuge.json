@@ -1,32 +1,73 @@
 [
   {
     "id": 1,
-    "kontrollschild": "BE-10234",
-    "seriennummer": "VIN-LT-001",
-    "interneNummer": "LKW-001",
-    "fahrzeugTyp": "LKW",
-    "status": "unterwegs",
-    "serviceDatum": "2026-05-15",
-    "mfkDatum": "2026-09-01"
+    "interneNummer": "LKW-005",
+    "kennzeichen": "FR-555",
+    "vin": "WDB9340321L123456",
+
+    "marke": "Mercedes-Benz",
+    "modell": "Actros",
+
+    "fahrzeugKategorie": "lkw",
+    "fahrzeugArt": "koffer",
+
+    "status": "verfuegbar",
+
+    "mfkDatum": "2026-11-15",
+
+    "aktuellerKmStand": 185420,
+    "letzteWartungKm": 180000,
+    "naechsteWartungKm": 200000,
+
+    "nutzlastKg": 12000,
+    "palettenPlaetze": 18
   },
+
   {
     "id": 2,
-    "kontrollschild": "ZH-20456",
-    "seriennummer": "VIN-LT-002",
-    "interneNummer": "VAN-002",
-    "fahrzeugTyp": "Transporter",
-    "status": "frei",
-    "serviceDatum": "2026-06-10",
-    "mfkDatum": "2026-10-15"
+    "interneNummer": "SZM-001",
+    "kennzeichen": "BE-100",
+    "vin": "WDB9340321L654321",
+
+    "marke": "Volvo",
+    "modell": "FH16",
+
+    "fahrzeugKategorie": "szm",
+    "fahrzeugArt": null,
+
+    "status": "verfuegbar",
+
+    "mfkDatum": "2026-10-01",
+
+    "aktuellerKmStand": 520000,
+    "letzteWartungKm": 500000,
+    "naechsteWartungKm": 550000,
+
+    "nutzlastKg": null,
+    "palettenPlaetze": null
   },
+
   {
     "id": 3,
-    "kontrollschild": "BS-30987",
-    "seriennummer": "VIN-LT-003",
-    "interneNummer": "LKW-003",
-    "fahrzeugTyp": "Sattelzug",
-    "status": "wartung",
-    "serviceDatum": "2026-04-20",
-    "mfkDatum": "2026-08-20"
+    "interneNummer": "TRP-001",
+    "kennzeichen": "SO-777",
+    "vin": "WDB9076331P987654",
+
+    "marke": "Mercedes-Benz",
+    "modell": "Sprinter",
+
+    "fahrzeugKategorie": "transporter",
+    "fahrzeugArt": "koffer",
+
+    "status": "verfuegbar",
+
+    "mfkDatum": "2026-08-20",
+
+    "aktuellerKmStand": 95420,
+    "letzteWartungKm": 90000,
+    "naechsteWartungKm": 120000,
+
+    "nutzlastKg": 1500,
+    "palettenPlaetze": 6
   }
 ]

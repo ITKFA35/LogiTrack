@@ -136,3 +136,86 @@ export function validateStatusChange(oldStatus, newStatus) {
   return { valid: true };
 }
 
+export function validateFahrzeug(fahrzeug, options = {}) {
+  const errors = [];
+  const requireId = options.requireId ?? false;
+
+  const fahrzeugKategorie = ["lkw", "szm", "transporter", "anhaenger", "auflieger"];
+  const fahrzeugArt = ["pritsche_plane", "koffer", "kuehler", "tank", "silo", "tieflader"];
+  const fahrzeugStatus = ["verfuegbar", "in_nutzung", "wartung", "reserviert", "gesperrt"];
+
+  if (requireId && !fahrzeug.id) errors.push("id fehlt");
+  if (!fahrzeug.interneNummer) errors.push("interneNummer fehlt");
+  if (!fahrzeug.kennzeichen) errors.push("kennzeichen fehlt");
+  if (!fahrzeug.vin) errors.push("vin fehlt");
+  if (!fahrzeug.marke) errors.push("marke fehlt");
+  if (!fahrzeug.modell) errors.push("modell fehlt");
+
+  if (!fahrzeugKategorie.includes(fahrzeug.fahrzeugKategorie)) {
+    errors.push("ungueltige fahrzeugKategorie");
+  }
+
+  if (fahrzeug.fahrzeugKategorie === "szm") {
+    if (fahrzeug.fahrzeugArt !== null) {
+      errors.push("SZM darf keine fahrzeugArt haben");
+    }
+
+    if (fahrzeug.nutzlastKg !== null) {
+      errors.push("SZM darf keine nutzlastKg haben");
+    }
+
+    if (fahrzeug.palettenPlaetze !== null) {
+      errors.push("SZM darf keine palettenPlaetze haben");
+    }
+
+  } else {
+    if (!fahrzeugArt.includes(fahrzeug.fahrzeugArt)) {
+      errors.push("ungueltige fahrzeugArt");
+    }
+
+    if (
+      typeof fahrzeug.nutzlastKg !== "number" ||
+      fahrzeug.nutzlastKg <= 0
+    ) {
+      errors.push("nutzlastKg muss positiv sein");
+    }
+    if (
+      typeof fahrzeug.palettenPlaetze !== "number" ||
+      fahrzeug.palettenPlaetze < 0
+    ) {
+      errors.push("palettenPlaetze darf nicht negativ sein");
+    }
+  }
+
+  if (!fahrzeugStatus.includes(fahrzeug.status)) {
+    errors.push("ungueltiger Fahrzeugstatus");
+  }
+
+  if (
+    typeof fahrzeug.aktuellerKmStand !== "number" ||
+    fahrzeug.aktuellerKmStand < 0
+  ) {
+    errors.push("aktuellerKmStand darf nicht negativ sein");
+  }
+  if (
+    typeof fahrzeug.letzteWartungKm !== "number" ||
+    fahrzeug.letzteWartungKm < 0
+  ) {
+    errors.push("letzteWartungKm darf nicht negativ sein");
+  }
+  if (
+    typeof fahrzeug.naechsteWartungKm !== "number" ||
+    fahrzeug.naechsteWartungKm <= fahrzeug.letzteWartungKm
+  ) {
+    errors.push("naechsteWartungKm muss groesser als letzteWartungKm sein");
+  }
+
+  if (isNaN(Date.parse(fahrzeug.mfkDatum))) {
+    errors.push("mfkDatum ungueltig");
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}

@@ -1,5 +1,4 @@
-import { validateSendung } from "./validation";
-import { validateStatusChange } from "./validation";
+import { validateSendung, validateStatusChange, validateFahrzeug } from "./validation";
 const BASE_URL = "http://logitracknas.taildc027e.ts.net:3001/api";
 
 function addParam(params, key, value) {
@@ -28,6 +27,62 @@ export async function getFahrer() {
 
 export async function getFahrzeuge() {
   return fetchJson(`${BASE_URL}/fahrzeuge`);
+}
+
+export async function getFahrzeugById(id) {
+  return fetchJson(`${BASE_URL}/fahrzeuge/${id}`);
+}
+
+export async function createFahrzeug(fahrzeugData) {
+  const validation = validateFahrzeug(fahrzeugData, { requireId: false });
+
+  if (!validation.valid) {
+    throw new Error(`Validierungsfehler: ${validation.errors.join(", ")}`);
+  }
+
+  const response = await fetch(`${BASE_URL}/fahrzeuge`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(fahrzeugData),
+  });
+
+  if (!response.ok) {
+    throw new Error(`API Fehler beim Erstellen: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function updateFahrzeug(id, fahrzeugData) {
+  const validation = validateFahrzeug(fahrzeugData, { requireId: true });
+
+  if (!validation.valid) {
+    throw new Error(`Validierungsfehler: ${validation.errors.join(", ")}`);
+  }
+
+  const response = await fetch(`${BASE_URL}/fahrzeuge/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(fahrzeugData),
+  });
+
+  if (!response.ok) {
+    throw new Error(`API Fehler beim Aktualisieren: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function deleteFahrzeug(id) {
+  const response = await fetch(`${BASE_URL}/fahrzeuge/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error(`API Fehler beim Loeschen: ${response.status}`);
+  }
+
+  return true;
 }
 
 export async function getSendungen() {
@@ -72,11 +127,13 @@ export async function getDashboardStats() {
     ["offen", "zugewiesen", "wartet", "unterwegs"].includes(s.status)
   ).length;
 
-  const fahrzeugeUnterwegs = fahrzeuge.filter(
-    (fz) => fz.status === "unterwegs"
+  const fahrzeugeInNutzung = fahrzeuge.filter(
+    (fz) => fz.status === "in_nutzung"
   ).length;
 
-  const fahrzeugeFrei = fahrzeuge.filter((fz) => fz.status === "frei").length;
+  const fahrzeugeVerfuegbar = fahrzeuge.filter(
+    (fz) => fz.status === "verfuegbar"
+  ).length;
 
   const gelieferteSendungen = sendungen.filter(
     (s) => s.status === "geliefert"
@@ -87,8 +144,8 @@ export async function getDashboardStats() {
     offeneSendungen,
     gelieferteSendungen,
     anzahlFahrzeuge: fahrzeuge.length,
-    fahrzeugeUnterwegs,
-    fahrzeugeFrei,
+    fahrzeugeInNutzung,
+    fahrzeugeVerfuegbar,
     anzahlFahrer: fahrer.length,
     anzahlKunden: kunden.length,
   };
@@ -300,4 +357,85 @@ export async function getSendungenAdvanced(options = {}) {
   const url = query ? `${BASE_URL}/sendungen?${query}` : `${BASE_URL}/sendungen`;
 
   return fetchJson(url);
+}
+
+export async function createFahrer(fahrerData) {
+  const response = await fetch(`${BASE_URL}/fahrer`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(fahrerData),
+  });
+
+  if (!response.ok) {
+    throw new Error(`API Fehler beim Erstellen: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function updateFahrer(id, fahrerData) {
+  const response = await fetch(`${BASE_URL}/fahrer/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(fahrerData),
+  });
+
+  if (!response.ok) {
+    throw new Error(`API Fehler beim Aktualisieren: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function deleteFahrer(id) {
+  const response = await fetch(`${BASE_URL}/fahrer/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error(`API Fehler beim Loeschen: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+
+export async function createKunde(kunde) {
+  const response = await fetch(`${BASE_URL}/kunden`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(kunde),
+  });
+
+  if (!response.ok) {
+    throw new Error(`API Fehler beim Erstellen: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function updateKunde(id, kunde) {
+  const response = await fetch(`${BASE_URL}/kunden/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(kunde),
+  });
+
+  if (!response.ok) {
+    throw new Error(`API Fehler beim Aktualisieren: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function deleteKunde(id) {
+  const response = await fetch(`${BASE_URL}/kunden/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error(`API Fehler beim Loeschen: ${response.status}`);
+  }
+
+  return response.json();
 }

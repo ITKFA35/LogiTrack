@@ -44,18 +44,52 @@ Erlaubte Lieferungstypen:
 - Palette
 
 ## Fahrzeug
-Pflichtfelder:
 - id
-- kontrollschild
-- seriennummer
 - interneNummer
-- fahrzeugTyp
+- kennzeichen
+- vin
+
+- marke
+- modell
+
+- fahrzeugKategorie
+- fahrzeugArt
+
 - status
 
-Erlaubte Statuswerte:
-- frei
-- unterwegs
+- mfkDatum
+
+- aktuellerKmStand
+- letzteWartungKm
+- naechsteWartungKm
+
+- nutzlastKg
+- palettenPlaetze
+
+### fahrzeugKategorie
+
+- lkw
+- szm
+- transporter
+- anhaenger
+- auflieger
+
+### fahrzeugArt
+
+- pritsche_plane
+- koffer
+- kuehler
+- tank
+- silo
+- tieflader
+
+### status
+
+- verfügbar
+- in_nutzung
 - wartung
+- reserviert
+- gesperrt
 
 ## Fahrer
 Pflichtfelder:

@@ -20,6 +20,97 @@ app.get("/api/fahrer", async (req, res) => {
   }
 });
 
+app.post("/api/fahrer", async (req, res) => {
+  try {
+    const data = req.body;
+
+    const [result] = await pool.query(
+      `INSERT INTO fahrer (
+        name,
+        vorname,
+        telefon,
+        lenkzeitStunden,
+        verfuegbarkeit,
+        fuehrerscheinKategorien,
+        spezifikationen
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        data.name,
+        data.vorname,
+        data.telefon,
+        data.lenkzeitStunden,
+        data.verfuegbarkeit,
+        JSON.stringify(data.fuehrerscheinKategorien || []),
+        JSON.stringify(data.spezifikationen || [])
+      ]
+    );
+
+    res.status(201).json({
+      id: result.insertId,
+      ...data
+    });
+  } catch (error) {
+    res.status(500).json({ fehler: error.message });
+  }
+});
+
+app.put("/api/fahrer/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+
+    const [result] = await pool.query(
+      `UPDATE fahrer SET
+        name=?,
+        vorname=?,
+        telefon=?,
+        lenkzeitStunden=?,
+        verfuegbarkeit=?,
+        fuehrerscheinKategorien=?,
+        spezifikationen=?
+      WHERE id=?`,
+      [
+        data.name,
+        data.vorname,
+        data.telefon,
+        data.lenkzeitStunden,
+        data.verfuegbarkeit,
+        JSON.stringify(data.fuehrerscheinKategorien || []),
+        JSON.stringify(data.spezifikationen || []),
+        id
+      ]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ fehler: "Nicht gefunden" });
+    }
+
+    res.json({ message: "Fahrer aktualisiert" });
+  } catch (error) {
+    res.status(500).json({ fehler: error.message });
+  }
+});
+
+app.delete("/api/fahrer/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const [result] = await pool.query(
+      "DELETE FROM fahrer WHERE id = ?",
+      [id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ fehler: "Nicht gefunden" });
+    }
+
+    res.json({ message: "Fahrer geloescht" });
+  } catch (error) {
+    res.status(500).json({ fehler: error.message });
+  }
+});
+
 app.get("/api/kunden", async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT * FROM kunden");
@@ -29,10 +120,262 @@ app.get("/api/kunden", async (req, res) => {
   }
 });
 
+app.post("/api/kunden", async (req, res) => {
+  try {
+    const data = req.body;
+
+    const [result] = await pool.query(
+      `INSERT INTO kunden (
+        kundenNummer,
+        firmenname,
+        ansprechperson,
+        strasse,
+        hausnummer,
+        plz,
+        ort,
+        land,
+        email,
+        telefon,
+        branche,
+        sprache,
+        kundentyp,
+        zahlungszielTage,
+        mwstNummer,
+        status,
+        bemerkungen
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        data.kundenNummer,
+        data.firmenname,
+        data.ansprechperson,
+        data.strasse,
+        data.hausnummer,
+        data.plz,
+        data.ort,
+        data.land || "CH",
+        data.email,
+        data.telefon,
+        data.branche,
+        data.sprache || "de",
+        data.kundentyp || "standard",
+        data.zahlungszielTage || 30,
+        data.mwstNummer || "",
+        data.status || "aktiv",
+        data.bemerkungen || ""
+      ]
+    );
+
+    res.status(201).json({
+      id: result.insertId,
+      ...data
+    });
+  } catch (error) {
+    res.status(500).json({ fehler: error.message });
+  }
+});
+
+app.put("/api/kunden/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+
+    const [result] = await pool.query(
+      `UPDATE kunden SET
+        kundenNummer=?,
+        firmenname=?,
+        ansprechperson=?,
+        strasse=?,
+        hausnummer=?,
+        plz=?,
+        ort=?,
+        land=?,
+        email=?,
+        telefon=?,
+        branche=?,
+        sprache=?,
+        kundentyp=?,
+        zahlungszielTage=?,
+        mwstNummer=?,
+        status=?,
+        bemerkungen=?
+      WHERE id=?`,
+      [
+        data.kundenNummer,
+        data.firmenname,
+        data.ansprechperson,
+        data.strasse,
+        data.hausnummer,
+        data.plz,
+        data.ort,
+        data.land || "CH",
+        data.email,
+        data.telefon,
+        data.branche,
+        data.sprache || "de",
+        data.kundentyp || "standard",
+        data.zahlungszielTage || 30,
+        data.mwstNummer || "",
+        data.status || "aktiv",
+        data.bemerkungen || "",
+        id
+      ]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ fehler: "Nicht gefunden" });
+    }
+
+    res.json({ message: "Kunde aktualisiert" });
+  } catch (error) {
+    res.status(500).json({ fehler: error.message });
+  }
+});
+
+app.delete("/api/kunden/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const [result] = await pool.query(
+      "DELETE FROM kunden WHERE id = ?",
+      [id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ fehler: "Nicht gefunden" });
+    }
+
+    res.json({ message: "Kunde geloescht" });
+  } catch (error) {
+    res.status(500).json({ fehler: error.message });
+  }
+});
+
 app.get("/api/fahrzeuge", async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT * FROM fahrzeuge");
     res.json(rows);
+  } catch (error) {
+    res.status(500).json({ fehler: error.message });
+  }
+});
+
+app.post("/api/fahrzeuge", async (req, res) => {
+  try {
+    const data = req.body;
+
+    const [result] = await pool.query(
+      `INSERT INTO fahrzeuge (
+        interneNummer,
+        kennzeichen,
+        vin,
+        fahrzeugKategorie,
+        fahrzeugArt,
+        marke,
+        modell,
+        status,
+        aktuellerKmStand,
+        mfkDatum,
+        letzteWartungKm,
+        naechsteWartungKm,
+        nutzlastKg,
+        palettenPlaetze
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        data.interneNummer,
+        data.kennzeichen,
+        data.vin,
+        data.fahrzeugKategorie,
+        data.fahrzeugArt,
+        data.marke,
+        data.modell,
+        data.status,
+        data.aktuellerKmStand,
+        data.mfkDatum,
+        data.letzteWartungKm,
+        data.naechsteWartungKm,
+        data.nutzlastKg,
+        data.palettenPlaetze
+      ]
+    );
+
+    res.status(201).json({
+      id: result.insertId,
+      ...data
+    });
+  } catch (error) {
+    res.status(500).json({ fehler: error.message });
+  }
+});
+
+app.put("/api/fahrzeuge/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+
+    const [result] = await pool.query(
+      `UPDATE fahrzeuge SET
+        interneNummer=?,
+        kennzeichen=?,
+        vin=?,
+        fahrzeugKategorie=?,
+        fahrzeugArt=?,
+        marke=?,
+        modell=?,
+        status=?,
+        aktuellerKmStand=?,
+        mfkDatum=?,
+        letzteWartungKm=?,
+        naechsteWartungKm=?,
+        nutzlastKg=?,
+        palettenPlaetze=?
+      WHERE id=?`,
+      [
+        data.interneNummer,
+        data.kennzeichen,
+        data.vin,
+        data.fahrzeugKategorie,
+        data.fahrzeugArt,
+        data.marke,
+        data.modell,
+        data.status,
+        data.aktuellerKmStand,
+        data.mfkDatum,
+        data.letzteWartungKm,
+        data.naechsteWartungKm,
+        data.nutzlastKg,
+        data.palettenPlaetze,
+        id
+      ]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        fehler: "Nicht gefunden"
+      });
+    }
+
+    res.json({ message: "Fahrzeug aktualisiert" });
+  } catch (error) {
+    res.status(500).json({ fehler: error.message });
+  }
+});
+
+app.delete("/api/fahrzeuge/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const [result] = await pool.query(
+      "DELETE FROM fahrzeuge WHERE id = ?",
+      [id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ fehler: "Nicht gefunden" });
+    }
+
+    res.json({ message: "Fahrzeug geloescht" });
   } catch (error) {
     res.status(500).json({ fehler: error.message });
   }
